@@ -102,7 +102,7 @@ export function KnowledgeSidebar({
             <SelectTrigger className="h-8 font-bold text-lg tracking-tight border-none bg-transparent hover:bg-muted/50 p-1.5 -ml-1.5 focus:ring-0 focus-visible:ring-0 shadow-none cursor-pointer">
               <SelectValue placeholder="Newest" />
             </SelectTrigger>
-            <SelectContent align="start">
+            <SelectContent align="start" alignItemWithTrigger={false} side="bottom" sideOffset={4}>
               <SelectItem value="newest">Newest</SelectItem>
               <SelectItem value="shuffle">Shuffle</SelectItem>
             </SelectContent>
