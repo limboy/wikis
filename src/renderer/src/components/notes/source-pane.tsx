@@ -9,6 +9,7 @@ interface SourcePaneProps {
   entries: KnowledgeEntryWithBacklinks[]
   paneIndex: number
   totalPanes: number
+  isHighlighted?: boolean
   onOpenNote: (noteId: string, fromIndex: number) => void
   onClose: (index: number) => void
 }
@@ -26,6 +27,7 @@ export function SourcePane({
   entries,
   paneIndex,
   totalPanes,
+  isHighlighted,
   onOpenNote,
   onClose
 }: SourcePaneProps) {
@@ -34,7 +36,10 @@ export function SourcePane({
   return (
     <div
       ref={paneRef}
-      className="flex-shrink-0 w-[600px] h-full flex flex-col bg-card text-card-foreground border-r border-border animate-in slide-in-from-right-4 fade-in duration-200"
+      className={cn(
+        'flex-shrink-0 w-[600px] h-full flex flex-col bg-card text-card-foreground border-r border-border transition-all duration-300 animate-in slide-in-from-right-4 fade-in duration-200',
+        isHighlighted && 'ring-2 ring-primary border-primary/80 z-10 shadow-lg'
+      )}
     >
       <div className="flex-1 flex flex-col h-full overflow-y-auto">
         <div className="p-6 flex flex-col gap-6">

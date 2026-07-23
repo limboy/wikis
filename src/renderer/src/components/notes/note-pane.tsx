@@ -13,6 +13,7 @@ interface NotePaneProps {
   entry: KnowledgeEntryWithBacklinks
   paneIndex: number
   totalPanes: number
+  isHighlighted?: boolean
   onOpenNote: (noteId: string, fromIndex: number) => void
   onClose: (index: number) => void
 }
@@ -25,7 +26,14 @@ const typeColorClasses: Record<KnowledgeType, string> = {
   general: 'bg-muted text-muted-foreground'
 }
 
-export function NotePane({ entry, paneIndex, totalPanes, onOpenNote, onClose }: NotePaneProps) {
+export function NotePane({
+  entry,
+  paneIndex,
+  totalPanes,
+  isHighlighted,
+  onOpenNote,
+  onClose
+}: NotePaneProps) {
   const paneRef = useRef<HTMLDivElement>(null)
 
   const relatedIds = Array.from(new Set(entry.related?.map((l) => l.targetId) || []))
@@ -39,7 +47,10 @@ export function NotePane({ entry, paneIndex, totalPanes, onOpenNote, onClose }: 
   return (
     <div
       ref={paneRef}
-      className="flex-shrink-0 w-[600px] h-full flex flex-col bg-card text-card-foreground border-r border-border animate-in slide-in-from-right-4 fade-in duration-200"
+      className={cn(
+        'flex-shrink-0 w-[600px] h-full flex flex-col bg-card text-card-foreground border-r border-border transition-all duration-300 animate-in slide-in-from-right-4 fade-in duration-200',
+        isHighlighted && 'ring-2 ring-primary border-primary/80 z-10 shadow-lg'
+      )}
     >
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col h-full overflow-y-auto">
