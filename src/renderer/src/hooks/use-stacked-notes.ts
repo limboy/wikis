@@ -8,9 +8,10 @@ export function useStackedNotes(initialNoteId?: string) {
 
   const openNote = (noteId: string, fromIndex: number) => {
     setStackedNoteIds(prev => {
-      // Avoid duplicate adjacent notes
-      if (prev[fromIndex + 1] === noteId) {
-        setShouldScrollToIndex(fromIndex + 1)
+      // If note is already opened anywhere in the stack, scroll to it
+      const existingIndex = prev.indexOf(noteId)
+      if (existingIndex !== -1) {
+        setShouldScrollToIndex(existingIndex)
         return prev
       }
       
@@ -21,24 +22,38 @@ export function useStackedNotes(initialNoteId?: string) {
     })
   }
 
+  const selectNote = (noteId: string) => {
+    setStackedNoteIds(prev => {
+      // If note is already opened in the stack, scroll to it
+      const existingIndex = prev.indexOf(noteId)
+      if (existingIndex !== -1) {
+        setShouldScrollToIndex(existingIndex)
+        return prev
+      }
+      setShouldScrollToIndex(0)
+      return [noteId]
+    })
+  }
+
   const closeNote = (index: number) => {
     setStackedNoteIds(prev => prev.slice(0, index))
   }
 
   const setInitialNote = (noteId: string) => {
-    setStackedNoteIds([noteId])
-    setShouldScrollToIndex(0)
+    selectNote(noteId)
   }
 
   useEffect(() => {
     if (shouldScrollToIndex === null || !containerRef.current) return
+    const targetIndex = shouldScrollToIndex
+    setShouldScrollToIndex(null)
+
     const timeoutId = setTimeout(() => {
       if (!containerRef.current) return
-      const pane = containerRef.current.children[shouldScrollToIndex] as HTMLElement
+      const pane = containerRef.current.children[targetIndex] as HTMLElement
       if (pane) {
-        pane.scrollIntoView({ behavior: 'smooth', inline: 'end' })
+        pane.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' })
       }
-      setShouldScrollToIndex(null)
     }, 50)
     return () => clearTimeout(timeoutId)
   }, [stackedNoteIds, shouldScrollToIndex])
@@ -46,6 +61,7 @@ export function useStackedNotes(initialNoteId?: string) {
   return {
     stackedNoteIds,
     openNote,
+    selectNote,
     closeNote,
     setInitialNote,
     containerRef

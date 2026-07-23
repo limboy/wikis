@@ -15,7 +15,7 @@ function IndexPage() {
     stackedNoteIds,
     openNote,
     closeNote,
-    setInitialNote,
+    selectNote,
     containerRef
   } = useStackedNotes()
 
@@ -23,9 +23,9 @@ function IndexPage() {
 
   const handleSelectEntry = useCallback(
     (id: string) => {
-      setInitialNote(id)
+      selectNote(id)
     },
-    [setInitialNote]
+    [selectNote]
   )
 
   return (
