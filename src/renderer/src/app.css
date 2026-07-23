@@ -154,3 +154,51 @@
 .select-none-children > * {
   user-select: none;
 }
+
+/* Markdown Content Styling */
+.markdown-body p {
+  margin-bottom: 0.625rem;
+}
+.markdown-body p:last-child {
+  margin-bottom: 0;
+}
+.markdown-body strong,
+.markdown-body b {
+  font-weight: 600;
+  color: var(--foreground);
+}
+.markdown-body ol {
+  list-style-type: decimal;
+  padding-left: 1.25rem;
+  margin-top: 0.375rem;
+  margin-bottom: 0.625rem;
+}
+.markdown-body ul {
+  list-style-type: disc;
+  padding-left: 1.25rem;
+  margin-top: 0.375rem;
+  margin-bottom: 0.625rem;
+}
+.markdown-body li {
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+.markdown-body li > p {
+  margin-bottom: 0;
+  display: inline;
+}
+.markdown-body code {
+  background-color: var(--muted);
+  padding: 0.125rem 0.375rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.875em;
+  font-family: monospace;
+}
+.markdown-body blockquote {
+  border-left: 3px solid var(--muted-foreground);
+  padding-left: 0.875rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--muted-foreground);
+  font-style: italic;
+}

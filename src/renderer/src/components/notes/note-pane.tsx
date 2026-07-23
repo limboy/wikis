@@ -8,6 +8,7 @@ import {
 } from '@/data/types'
 import { getEntryById } from '@/data/utils'
 import { Button } from '@/components/ui/button'
+import { MarkdownRenderer } from '@/components/ui/markdown-renderer'
 
 interface NotePaneProps {
   entry: KnowledgeEntryWithBacklinks
@@ -111,9 +112,10 @@ export function NotePane({ entry, paneIndex, totalPanes, onOpenNote, onClose }: 
                     <Quote className="size-4 shrink-0" />
                     <span>原文摘录</span>
                   </div>
-                  <div className="text-[15px] sm:text-base font-serif italic text-foreground/95 leading-relaxed whitespace-pre-wrap pl-1">
-                    {entry.whatItIs}
-                  </div>
+                  <MarkdownRenderer
+                    content={entry.whatItIs}
+                    className="text-[15px] sm:text-base font-serif italic text-foreground/95 leading-relaxed pl-1"
+                  />
                 </div>
               )}
 
@@ -123,9 +125,7 @@ export function NotePane({ entry, paneIndex, totalPanes, onOpenNote, onClose }: 
                   <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                     {SECTION_TITLES.excerpt.whyItMatters}
                   </h2>
-                  <div className="text-sm text-foreground/80 whitespace-pre-wrap leading-[1.8]">
-                    {entry.whyItMatters}
-                  </div>
+                  <MarkdownRenderer content={entry.whyItMatters} />
                 </section>
               )}
 
@@ -135,9 +135,7 @@ export function NotePane({ entry, paneIndex, totalPanes, onOpenNote, onClose }: 
                   <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                     {SECTION_TITLES.excerpt.deepDive}
                   </h2>
-                  <div className="text-sm text-foreground/80 whitespace-pre-wrap leading-[1.8]">
-                    {entry.deepDive}
-                  </div>
+                  <MarkdownRenderer content={entry.deepDive} />
                 </section>
               )}
             </>
@@ -150,9 +148,7 @@ export function NotePane({ entry, paneIndex, totalPanes, onOpenNote, onClose }: 
                   <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                     {SECTION_TITLES[entry.type]?.whatItIs || '内容细节'}
                   </h2>
-                  <div className="text-sm text-foreground/80 whitespace-pre-wrap leading-[1.8]">
-                    {entry.whatItIs}
-                  </div>
+                  <MarkdownRenderer content={entry.whatItIs} />
                 </section>
               )}
 
@@ -162,9 +158,7 @@ export function NotePane({ entry, paneIndex, totalPanes, onOpenNote, onClose }: 
                   <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                     {SECTION_TITLES[entry.type]?.whyItMatters || '为什么重要'}
                   </h2>
-                  <div className="text-sm text-foreground/80 whitespace-pre-wrap leading-[1.8]">
-                    {entry.whyItMatters}
-                  </div>
+                  <MarkdownRenderer content={entry.whyItMatters} />
                 </section>
               )}
 
@@ -174,9 +168,7 @@ export function NotePane({ entry, paneIndex, totalPanes, onOpenNote, onClose }: 
                   <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                     {SECTION_TITLES[entry.type]?.deepDive || '深入了解'}
                   </h2>
-                  <div className="text-sm text-foreground/80 whitespace-pre-wrap leading-[1.8]">
-                    {entry.deepDive}
-                  </div>
+                  <MarkdownRenderer content={entry.deepDive} />
                 </section>
               )}
             </>
