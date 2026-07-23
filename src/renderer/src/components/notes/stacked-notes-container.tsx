@@ -5,7 +5,6 @@ import { SourcePane } from './source-pane'
 
 interface StackedNotesContainerProps {
   stackedNoteIds: string[]
-  highlightedIndex?: number | null
   onOpenNote: (noteId: string, fromIndex: number) => void
   onCloseNote: (index: number) => void
   containerRef: RefObject<HTMLDivElement | null>
@@ -13,7 +12,6 @@ interface StackedNotesContainerProps {
 
 export function StackedNotesContainer({
   stackedNoteIds,
-  highlightedIndex,
   onOpenNote,
   onCloseNote,
   containerRef
@@ -39,7 +37,6 @@ export function StackedNotesContainer({
       style={{ scrollBehavior: 'smooth' }}
     >
       {stackedNoteIds.map((noteId, index) => {
-        const isHighlighted = highlightedIndex === index
         if (noteId.startsWith('source:')) {
           const sourceTitle = noteId.slice(7)
           const sourceData = getSourceDataByTitle(sourceTitle)
@@ -52,7 +49,6 @@ export function StackedNotesContainer({
               entries={sourceData.entries}
               paneIndex={index}
               totalPanes={stackedNoteIds.length}
-              isHighlighted={isHighlighted}
               onOpenNote={onOpenNote}
               onClose={onCloseNote}
             />
@@ -68,7 +64,6 @@ export function StackedNotesContainer({
             entry={entry}
             paneIndex={index}
             totalPanes={stackedNoteIds.length}
-            isHighlighted={isHighlighted}
             onOpenNote={onOpenNote}
             onClose={onCloseNote}
           />

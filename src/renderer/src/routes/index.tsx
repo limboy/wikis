@@ -13,7 +13,6 @@ function IndexPage() {
   const allEntries = getEntriesWithBacklinks()
   const {
     stackedNoteIds,
-    highlightedIndex,
     openNote,
     closeNote,
     selectNote,
@@ -39,7 +38,6 @@ function IndexPage() {
       />
       <StackedNotesContainer
         stackedNoteIds={stackedNoteIds}
-        highlightedIndex={highlightedIndex}
         onOpenNote={openNote}
         onCloseNote={closeNote}
         containerRef={containerRef}

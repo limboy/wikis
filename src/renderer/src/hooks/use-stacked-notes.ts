@@ -4,15 +4,9 @@ export function useStackedNotes(initialNoteId?: string) {
   const [stackedNoteIds, setStackedNoteIds] = useState<string[]>(
     initialNoteId ? [initialNoteId] : []
   )
-  const [highlightedIndex, setHighlightedIndex] = useState<number | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
   const scrollToPane = useCallback((index: number) => {
-    setHighlightedIndex(index)
-    setTimeout(() => {
-      setHighlightedIndex(null)
-    }, 1500)
-
     setTimeout(() => {
       if (!containerRef.current) return
       const pane = containerRef.current.children[index] as HTMLElement
@@ -68,7 +62,6 @@ export function useStackedNotes(initialNoteId?: string) {
 
   return {
     stackedNoteIds,
-    highlightedIndex,
     openNote,
     selectNote,
     closeNote,
