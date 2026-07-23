@@ -122,7 +122,7 @@ export function NotePane({ entry, paneIndex, totalPanes, onOpenNote, onClose }: 
               {/* 记录与触动理由 */}
               {entry.whyItMatters && (
                 <section className="flex flex-col gap-2">
-                  <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  <h2 className="text-base font-semibold text-foreground">
                     {SECTION_TITLES.excerpt.whyItMatters}
                   </h2>
                   <MarkdownRenderer content={entry.whyItMatters} />
@@ -132,7 +132,7 @@ export function NotePane({ entry, paneIndex, totalPanes, onOpenNote, onClose }: 
               {/* 重述与延伸思考 */}
               {entry.deepDive && (
                 <section className="flex flex-col gap-2">
-                  <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  <h2 className="text-base font-semibold text-foreground">
                     {SECTION_TITLES.excerpt.deepDive}
                   </h2>
                   <MarkdownRenderer content={entry.deepDive} />
@@ -145,7 +145,7 @@ export function NotePane({ entry, paneIndex, totalPanes, onOpenNote, onClose }: 
               {/* What it is */}
               {entry.whatItIs && (
                 <section className="flex flex-col gap-2">
-                  <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  <h2 className="text-base font-semibold text-foreground">
                     {SECTION_TITLES[entry.type]?.whatItIs || '内容细节'}
                   </h2>
                   <MarkdownRenderer content={entry.whatItIs} />
@@ -155,7 +155,7 @@ export function NotePane({ entry, paneIndex, totalPanes, onOpenNote, onClose }: 
               {/* Why it matters */}
               {entry.whyItMatters && (
                 <section className="flex flex-col gap-2">
-                  <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  <h2 className="text-base font-semibold text-foreground">
                     {SECTION_TITLES[entry.type]?.whyItMatters || '为什么重要'}
                   </h2>
                   <MarkdownRenderer content={entry.whyItMatters} />
@@ -165,7 +165,7 @@ export function NotePane({ entry, paneIndex, totalPanes, onOpenNote, onClose }: 
               {/* Deep dive */}
               {entry.deepDive && (
                 <section className="flex flex-col gap-2">
-                  <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  <h2 className="text-base font-semibold text-foreground">
                     {SECTION_TITLES[entry.type]?.deepDive || '深入了解'}
                   </h2>
                   <MarkdownRenderer content={entry.deepDive} />
