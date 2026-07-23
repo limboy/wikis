@@ -1,9 +1,11 @@
 import { RefObject } from 'react'
+import { KnowledgeEntryWithBacklinks } from '@/data/types'
 import { getEntryById, getSourceDataByTitle } from '@/data/utils'
 import { NotePane } from './note-pane'
 import { SourcePane } from './source-pane'
 
 interface StackedNotesContainerProps {
+  entries?: KnowledgeEntryWithBacklinks[]
   stackedNoteIds: string[]
   onOpenNote: (noteId: string, fromIndex: number) => void
   onCloseNote: (index: number) => void
@@ -11,6 +13,7 @@ interface StackedNotesContainerProps {
 }
 
 export function StackedNotesContainer({
+  entries,
   stackedNoteIds,
   onOpenNote,
   onCloseNote,
@@ -39,7 +42,7 @@ export function StackedNotesContainer({
       {stackedNoteIds.map((noteId, index) => {
         if (noteId.startsWith('source:')) {
           const sourceTitle = noteId.slice(7)
-          const sourceData = getSourceDataByTitle(sourceTitle)
+          const sourceData = getSourceDataByTitle(sourceTitle, entries)
           if (!sourceData) return null
 
           return (
@@ -55,13 +58,14 @@ export function StackedNotesContainer({
           )
         }
 
-        const entry = getEntryById(noteId)
+        const entry = getEntryById(noteId, entries)
         if (!entry) return null
 
         return (
           <NotePane
             key={`${noteId}-${index}`}
             entry={entry}
+            allEntries={entries}
             paneIndex={index}
             totalPanes={stackedNoteIds.length}
             onOpenNote={onOpenNote}

@@ -45,25 +45,32 @@ export function getEntriesWithBacklinks(): KnowledgeEntryWithBacklinks[] {
 }
 
 // Get a single entry by ID with backlinks
-export function getEntryById(id: string): KnowledgeEntryWithBacklinks | undefined {
-  const entries = getEntriesWithBacklinks()
+export function getEntryById(
+  id: string,
+  allEntries?: KnowledgeEntryWithBacklinks[]
+): KnowledgeEntryWithBacklinks | undefined {
+  const entries = allEntries || getEntriesWithBacklinks()
   return entries.find((e) => e.id === id)
 }
 
 // Get entries sharing the same source
 export function getEntriesBySameSource(
-  currentEntry: KnowledgeEntry
+  currentEntry: KnowledgeEntry,
+  allEntries?: KnowledgeEntryWithBacklinks[]
 ): KnowledgeEntryWithBacklinks[] {
   if (!currentEntry.source?.title) return []
-  const all = getEntriesWithBacklinks()
+  const all = allEntries || getEntriesWithBacklinks()
   return all.filter(
     (e) => e.id !== currentEntry.id && e.source?.title === currentEntry.source?.title
   )
 }
 
 // Get source metadata and entries belonging to that source by title
-export function getSourceDataByTitle(title: string) {
-  const all = getEntriesWithBacklinks()
+export function getSourceDataByTitle(
+  title: string,
+  allEntries?: KnowledgeEntryWithBacklinks[]
+) {
+  const all = allEntries || getEntriesWithBacklinks()
   const matchingEntries = all.filter((e) => e.source?.title === title)
   if (matchingEntries.length === 0) return undefined
   const source = matchingEntries[0].source!

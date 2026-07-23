@@ -12,6 +12,7 @@ import { MarkdownRenderer } from '@/components/ui/markdown-renderer'
 
 interface NotePaneProps {
   entry: KnowledgeEntryWithBacklinks
+  allEntries?: KnowledgeEntryWithBacklinks[]
   paneIndex: number
   totalPanes: number
   onOpenNote: (noteId: string, fromIndex: number) => void
@@ -57,7 +58,14 @@ const SECTION_TITLES: Record<
   }
 }
 
-export function NotePane({ entry, paneIndex, totalPanes, onOpenNote, onClose }: NotePaneProps) {
+export function NotePane({
+  entry,
+  allEntries,
+  paneIndex,
+  totalPanes,
+  onOpenNote,
+  onClose
+}: NotePaneProps) {
   const paneRef = useRef<HTMLDivElement>(null)
 
   const relatedIds = Array.from(new Set(entry.related?.map((l) => l.targetId) || []))
@@ -211,6 +219,7 @@ export function NotePane({ entry, paneIndex, totalPanes, onOpenNote, onClose }: 
                       <RelatedCard
                         key={targetId}
                         noteId={targetId}
+                        allEntries={allEntries}
                         onClick={() => onOpenNote(targetId, paneIndex)}
                       />
                     ))}
@@ -229,6 +238,7 @@ export function NotePane({ entry, paneIndex, totalPanes, onOpenNote, onClose }: 
                       <RelatedCard
                         key={sourceId}
                         noteId={sourceId}
+                        allEntries={allEntries}
                         onClick={() => onOpenNote(sourceId, paneIndex)}
                       />
                     ))}
@@ -243,8 +253,16 @@ export function NotePane({ entry, paneIndex, totalPanes, onOpenNote, onClose }: 
   )
 }
 
-function RelatedCard({ noteId, onClick }: { noteId: string; onClick: () => void }) {
-  const targetEntry = getEntryById(noteId)
+function RelatedCard({
+  noteId,
+  allEntries,
+  onClick
+}: {
+  noteId: string
+  allEntries?: KnowledgeEntryWithBacklinks[]
+  onClick: () => void
+}) {
+  const targetEntry = getEntryById(noteId, allEntries)
   if (!targetEntry) {
     return (
       <button

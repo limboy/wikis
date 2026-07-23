@@ -50,6 +50,7 @@ function IndexPage() {
         onEntriesChange={setSortedEntries}
       />
       <StackedNotesContainer
+        entries={sortedEntries}
         stackedNoteIds={stackedNoteIds}
         onOpenNote={openNote}
         onCloseNote={closeNote}

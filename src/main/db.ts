@@ -41,23 +41,23 @@ export interface KnowledgeEntry {
 
 let db: Database.Database | null = null
 
-export function initDatabase(): Database.Database {
-  if (db) return db
+export function initDatabase(customPath?: string): Database.Database {
+  if (db && !customPath) return db
 
-  const userDataPath = app.getPath('userData')
-  if (!existsSync(userDataPath)) {
-    mkdirSync(userDataPath, { recursive: true })
+  const dbPath = customPath || join(app.getPath('userData'), 'wikis.db')
+  const dir = join(dbPath, '..')
+  if (!existsSync(dir)) {
+    mkdirSync(dir, { recursive: true })
   }
 
-  const dbPath = join(userDataPath, 'wikis.db')
   console.log('[SQLite] Connecting to database at:', dbPath)
 
-  db = new Database(dbPath)
-  db.pragma('journal_mode = WAL')
-  db.pragma('foreign_keys = ON')
+  const instance = new Database(dbPath)
+  instance.pragma('journal_mode = WAL')
+  instance.pragma('foreign_keys = ON')
 
   // Create Tables
-  db.exec(`
+  instance.exec(`
     CREATE TABLE IF NOT EXISTS entries (
       id TEXT PRIMARY KEY,
       title TEXT NOT NULL,
@@ -90,11 +90,14 @@ export function initDatabase(): Database.Database {
     );
   `)
 
-  return db
+  if (!customPath) {
+    db = instance
+  }
+  return instance
 }
 
-export function getAllEntries(): KnowledgeEntry[] {
-  const database = initDatabase()
+export function getAllEntries(customDb?: Database.Database): KnowledgeEntry[] {
+  const database = customDb || initDatabase()
 
   const rows = database
     .prepare(
@@ -145,8 +148,8 @@ export function getAllEntries(): KnowledgeEntry[] {
   })
 }
 
-export function getEntryById(id: string): KnowledgeEntry | null {
-  const database = initDatabase()
+export function getEntryById(id: string, customDb?: Database.Database): KnowledgeEntry | null {
+  const database = customDb || initDatabase()
 
   const row = database
     .prepare(
@@ -196,11 +199,11 @@ export function getEntryById(id: string): KnowledgeEntry | null {
   return entry
 }
 
-export function createEntry(entry: KnowledgeEntry): KnowledgeEntry {
-  const database = initDatabase()
+export function createEntry(entry: KnowledgeEntry, customDb?: Database.Database): KnowledgeEntry {
+  const database = customDb || initDatabase()
 
   const insertEntry = database.prepare(`
-    INSERT INTO entries (
+    INSERT OR REPLACE INTO entries (
       id, title, type, oneLiner, whatItIs, whyItMatters, deepDive,
       source_type, source_title, source_author, source_url,
       createdAt, updatedAt
@@ -250,11 +253,11 @@ export function createEntry(entry: KnowledgeEntry): KnowledgeEntry {
   })
 
   transaction()
-  return getEntryById(entry.id)!
+  return getEntryById(entry.id, database)!
 }
 
-export function updateEntry(id: string, entry: KnowledgeEntry): KnowledgeEntry {
-  const database = initDatabase()
+export function updateEntry(id: string, entry: KnowledgeEntry, customDb?: Database.Database): KnowledgeEntry {
+  const database = customDb || initDatabase()
 
   const updateStmt = database.prepare(`
     UPDATE entries SET
@@ -312,28 +315,24 @@ export function updateEntry(id: string, entry: KnowledgeEntry): KnowledgeEntry {
   })
 
   transaction()
-  return getEntryById(id)!
+  return getEntryById(id, database)!
 }
 
-export function deleteEntry(id: string): boolean {
-  const database = initDatabase()
+export function deleteEntry(id: string, customDb?: Database.Database): boolean {
+  const database = customDb || initDatabase()
   const result = database.prepare(`DELETE FROM entries WHERE id = ?`).run(id)
   return result.changes > 0
 }
 
-export function seedInitialEntriesIfEmpty(initialEntries: KnowledgeEntry[]): void {
-  const database = initDatabase()
-  const countRow = database.prepare(`SELECT COUNT(*) as count FROM entries`).get() as { count: number }
-
-  if (countRow.count === 0 && initialEntries.length > 0) {
-    console.log(`[SQLite] Seeding ${initialEntries.length} initial entries into database...`)
-    for (const entry of initialEntries) {
-      try {
-        createEntry(entry)
-      } catch (err) {
-        console.error(`[SQLite] Error seeding entry ${entry.id}:`, err)
-      }
+export function seedInitialEntriesIfEmpty(initialEntries: KnowledgeEntry[], customDb?: Database.Database): void {
+  const database = customDb || initDatabase()
+  console.log(`[SQLite] Syncing ${initialEntries.length} initial entries into database...`)
+  for (const entry of initialEntries) {
+    try {
+      createEntry(entry, database)
+    } catch (err) {
+      console.error(`[SQLite] Error syncing entry ${entry.id}:`, err)
     }
-    console.log('[SQLite] Seeding completed.')
   }
+  console.log('[SQLite] Syncing completed.')
 }
