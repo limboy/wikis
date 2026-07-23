@@ -29,9 +29,7 @@ export interface KnowledgeEntry {
   title: string
   type: KnowledgeType
   oneLiner: string
-  whatItIs: string
-  whyItMatters: string
-  deepDive: string
+  content?: string
   source?: Source
   related: RelatedLink[]
   tags: string[]
@@ -63,9 +61,7 @@ export function initDatabase(customPath?: string): Database.Database {
       title TEXT NOT NULL,
       type TEXT NOT NULL,
       oneLiner TEXT NOT NULL,
-      whatItIs TEXT NOT NULL,
-      whyItMatters TEXT NOT NULL,
-      deepDive TEXT NOT NULL,
+      content TEXT,
       source_type TEXT,
       source_title TEXT,
       source_author TEXT,
@@ -90,6 +86,12 @@ export function initDatabase(customPath?: string): Database.Database {
     );
   `)
 
+  try {
+    instance.exec(`ALTER TABLE entries ADD COLUMN content TEXT;`)
+  } catch {
+    // Column already exists
+  }
+
   if (!customPath) {
     db = instance
   }
@@ -103,7 +105,7 @@ export function getAllEntries(customDb?: Database.Database): KnowledgeEntry[] {
     .prepare(
       `
     SELECT 
-      id, title, type, oneLiner, whatItIs, whyItMatters, deepDive,
+      id, title, type, oneLiner, content,
       source_type, source_title, source_author, source_url,
       createdAt, updatedAt
     FROM entries
@@ -126,9 +128,7 @@ export function getAllEntries(customDb?: Database.Database): KnowledgeEntry[] {
       title: row.title,
       type: row.type,
       oneLiner: row.oneLiner,
-      whatItIs: row.whatItIs,
-      whyItMatters: row.whyItMatters,
-      deepDive: row.deepDive,
+      content: row.content || undefined,
       tags: tagsRows.map((t) => t.tag),
       related: relatedRows,
       createdAt: row.createdAt,
@@ -155,7 +155,7 @@ export function getEntryById(id: string, customDb?: Database.Database): Knowledg
     .prepare(
       `
     SELECT 
-      id, title, type, oneLiner, whatItIs, whyItMatters, deepDive,
+      id, title, type, oneLiner, content,
       source_type, source_title, source_author, source_url,
       createdAt, updatedAt
     FROM entries
@@ -178,9 +178,7 @@ export function getEntryById(id: string, customDb?: Database.Database): Knowledg
     title: row.title,
     type: row.type,
     oneLiner: row.oneLiner,
-    whatItIs: row.whatItIs,
-    whyItMatters: row.whyItMatters,
-    deepDive: row.deepDive,
+    content: row.content || undefined,
     tags: tagsRows.map((t) => t.tag),
     related: relatedRows,
     createdAt: row.createdAt,
@@ -204,11 +202,11 @@ export function createEntry(entry: KnowledgeEntry, customDb?: Database.Database)
 
   const insertEntry = database.prepare(`
     INSERT OR REPLACE INTO entries (
-      id, title, type, oneLiner, whatItIs, whyItMatters, deepDive,
+      id, title, type, oneLiner, content,
       source_type, source_title, source_author, source_url,
       createdAt, updatedAt
     ) VALUES (
-      ?, ?, ?, ?, ?, ?, ?,
+      ?, ?, ?, ?, ?,
       ?, ?, ?, ?,
       ?, ?
     )
@@ -228,9 +226,7 @@ export function createEntry(entry: KnowledgeEntry, customDb?: Database.Database)
       entry.title,
       entry.type,
       entry.oneLiner,
-      entry.whatItIs,
-      entry.whyItMatters,
-      entry.deepDive,
+      entry.content || null,
       entry.source?.type || null,
       entry.source?.title || null,
       entry.source?.author || null,
@@ -264,9 +260,7 @@ export function updateEntry(id: string, entry: KnowledgeEntry, customDb?: Databa
       title = ?,
       type = ?,
       oneLiner = ?,
-      whatItIs = ?,
-      whyItMatters = ?,
-      deepDive = ?,
+      content = ?,
       source_type = ?,
       source_title = ?,
       source_author = ?,
@@ -288,9 +282,7 @@ export function updateEntry(id: string, entry: KnowledgeEntry, customDb?: Databa
       entry.title,
       entry.type,
       entry.oneLiner,
-      entry.whatItIs,
-      entry.whyItMatters,
-      entry.deepDive,
+      entry.content || null,
       entry.source?.type || null,
       entry.source?.title || null,
       entry.source?.author || null,

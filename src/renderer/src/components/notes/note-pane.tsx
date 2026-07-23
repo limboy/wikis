@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import { X, ChevronRight, Quote } from 'lucide-react'
+import { X, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import {
   KnowledgeEntryWithBacklinks,
@@ -25,37 +25,6 @@ const typeColorClasses: Record<KnowledgeType, string> = {
   event: 'bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300',
   excerpt: 'bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300',
   general: 'bg-muted text-muted-foreground'
-}
-
-const SECTION_TITLES: Record<
-  KnowledgeType,
-  { whatItIs: string; whyItMatters: string; deepDive: string }
-> = {
-  concept: {
-    whatItIs: '概念定义与机制',
-    whyItMatters: '为什么重要',
-    deepDive: '深入剖析'
-  },
-  story: {
-    whatItIs: '故事经过',
-    whyItMatters: '核心启发',
-    deepDive: '现实映射与应用'
-  },
-  event: {
-    whatItIs: '事件过程与脉络',
-    whyItMatters: '关键影响',
-    deepDive: '深层驱动力'
-  },
-  excerpt: {
-    whatItIs: '原文摘录',
-    whyItMatters: '记录与触动理由',
-    deepDive: '重述与延伸思考'
-  },
-  general: {
-    whatItIs: '思考记录',
-    whyItMatters: '记录初衷',
-    deepDive: '后续探究'
-  }
 }
 
 export function NotePane({
@@ -109,77 +78,11 @@ export function NotePane({
             {entry.oneLiner}
           </div>
 
-          {/* Main Content Sections (Tailored by Type) */}
-          {entry.type === 'excerpt' ? (
-            /* Dedicated Excerpt / Quote Template */
-            <>
-              {/* Featured Quote Box */}
-              {entry.whatItIs && (
-                <div className="relative my-1 p-5 rounded-r-xl border-l-4 border-emerald-500 bg-emerald-500/5 dark:bg-emerald-500/10 flex flex-col gap-2.5">
-                  <div className="flex items-center gap-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">
-                    <Quote className="size-4 shrink-0" />
-                    <span>原文摘录</span>
-                  </div>
-                  <MarkdownRenderer
-                    content={entry.whatItIs}
-                    className="text-[15px] sm:text-base font-serif italic text-foreground/95 leading-relaxed pl-1"
-                  />
-                </div>
-              )}
-
-              {/* 记录与触动理由 */}
-              {entry.whyItMatters && (
-                <section className="flex flex-col gap-2">
-                  <h2 className="text-base font-semibold text-foreground">
-                    {SECTION_TITLES.excerpt.whyItMatters}
-                  </h2>
-                  <MarkdownRenderer content={entry.whyItMatters} />
-                </section>
-              )}
-
-              {/* 重述与延伸思考 */}
-              {entry.deepDive && (
-                <section className="flex flex-col gap-2">
-                  <h2 className="text-base font-semibold text-foreground">
-                    {SECTION_TITLES.excerpt.deepDive}
-                  </h2>
-                  <MarkdownRenderer content={entry.deepDive} />
-                </section>
-              )}
-            </>
-          ) : (
-            /* Standard Sections tailored by KnowledgeType */
-            <>
-              {/* What it is */}
-              {entry.whatItIs && (
-                <section className="flex flex-col gap-2">
-                  <h2 className="text-base font-semibold text-foreground">
-                    {SECTION_TITLES[entry.type]?.whatItIs || '内容细节'}
-                  </h2>
-                  <MarkdownRenderer content={entry.whatItIs} />
-                </section>
-              )}
-
-              {/* Why it matters */}
-              {entry.whyItMatters && (
-                <section className="flex flex-col gap-2">
-                  <h2 className="text-base font-semibold text-foreground">
-                    {SECTION_TITLES[entry.type]?.whyItMatters || '为什么重要'}
-                  </h2>
-                  <MarkdownRenderer content={entry.whyItMatters} />
-                </section>
-              )}
-
-              {/* Deep dive */}
-              {entry.deepDive && (
-                <section className="flex flex-col gap-2">
-                  <h2 className="text-base font-semibold text-foreground">
-                    {SECTION_TITLES[entry.type]?.deepDive || '深入了解'}
-                  </h2>
-                  <MarkdownRenderer content={entry.deepDive} />
-                </section>
-              )}
-            </>
+          {/* Main Content */}
+          {entry.content && (
+            <div className="text-sm text-foreground/90 leading-relaxed">
+              <MarkdownRenderer content={entry.content} />
+            </div>
           )}
 
           {/* Bottom Section: 来源, 相关内容, 被引用 */}

@@ -31,9 +31,7 @@ export interface KnowledgeEntry {
 
   // Standard Sections
   oneLiner: string // 一句话解释
-  whatItIs: string // 它是怎么回事
-  whyItMatters: string // 为什么重要
-  deepDive: string // 深入了解
+  content?: string // 详细内容 / 正文
 
   // Metadata
   source?: Source
