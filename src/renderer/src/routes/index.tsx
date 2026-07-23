@@ -1,16 +1,16 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { KnowledgeSidebar } from '@/components/sidebar/knowledge-sidebar'
 import { StackedNotesContainer } from '@/components/notes/stacked-notes-container'
 import { useStackedNotes } from '@/hooks/use-stacked-notes'
-import { getEntriesWithBacklinks, sortByDate } from '@/data/utils'
+import { getEntriesWithBacklinksAsync, sortByDate } from '@/data/utils'
+import { KnowledgeEntryWithBacklinks } from '@/data/types'
 
 export const Route = createFileRoute('/')({
   component: IndexPage
 })
 
 function IndexPage() {
-  const allEntries = getEntriesWithBacklinks()
   const {
     stackedNoteIds,
     openNote,
@@ -19,7 +19,20 @@ function IndexPage() {
     containerRef
   } = useStackedNotes()
 
-  const [sortedEntries, setSortedEntries] = useState(() => sortByDate(allEntries))
+  const [sortedEntries, setSortedEntries] = useState<KnowledgeEntryWithBacklinks[]>([])
+
+  const loadData = useCallback(async () => {
+    try {
+      const allEntries = await getEntriesWithBacklinksAsync()
+      setSortedEntries(sortByDate(allEntries))
+    } catch (err) {
+      console.error('[IndexPage] Error loading knowledge entries:', err)
+    }
+  }, [])
+
+  useEffect(() => {
+    loadData()
+  }, [loadData])
 
   const handleSelectEntry = useCallback(
     (id: string) => {

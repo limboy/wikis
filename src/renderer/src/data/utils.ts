@@ -1,5 +1,5 @@
 import { KnowledgeEntry, KnowledgeEntryWithBacklinks, BackLink } from './types'
-import { knowledgeEntries } from './knowledge-base'
+import { knowledgeEntries, fetchKnowledgeEntries } from './knowledge-base'
 
 // Build backlinks map from the knowledge entries
 export function buildBacklinks(entries: KnowledgeEntry[]): Map<string, BackLink[]> {
@@ -20,7 +20,22 @@ export function buildBacklinks(entries: KnowledgeEntry[]): Map<string, BackLink[
   return map
 }
 
-// Get all entries with computed backlinks
+// Attach computed backlinks to a set of entries
+export function attachBacklinksToEntries(entries: KnowledgeEntry[]): KnowledgeEntryWithBacklinks[] {
+  const backlinksMap = buildBacklinks(entries)
+  return entries.map((entry) => ({
+    ...entry,
+    backlinks: backlinksMap.get(entry.id) || []
+  }))
+}
+
+// Get all entries with computed backlinks asynchronously
+export async function getEntriesWithBacklinksAsync(): Promise<KnowledgeEntryWithBacklinks[]> {
+  const entries = await fetchKnowledgeEntries()
+  return attachBacklinksToEntries(entries)
+}
+
+// Get all entries with computed backlinks (synchronous fallback)
 export function getEntriesWithBacklinks(): KnowledgeEntryWithBacklinks[] {
   const backlinksMap = buildBacklinks(knowledgeEntries)
   return knowledgeEntries.map((entry) => ({

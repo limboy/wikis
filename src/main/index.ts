@@ -1,7 +1,40 @@
-import { app, shell, BrowserWindow } from 'electron'
+import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+import {
+  initDatabase,
+  seedInitialEntriesIfEmpty,
+  getAllEntries,
+  getEntryById,
+  createEntry,
+  updateEntry,
+  deleteEntry,
+  KnowledgeEntry
+} from './db'
+import { initialKnowledgeEntries } from './initial-data'
+
+function setupIpcHandlers(): void {
+  ipcMain.handle('db:getAllEntries', () => {
+    return getAllEntries()
+  })
+
+  ipcMain.handle('db:getEntryById', (_, id: string) => {
+    return getEntryById(id)
+  })
+
+  ipcMain.handle('db:createEntry', (_, entry: KnowledgeEntry) => {
+    return createEntry(entry)
+  })
+
+  ipcMain.handle('db:updateEntry', (_, id: string, entry: KnowledgeEntry) => {
+    return updateEntry(id, entry)
+  })
+
+  ipcMain.handle('db:deleteEntry', (_, id: string) => {
+    return deleteEntry(id)
+  })
+}
 
 function createWindow(): void {
   const mainWindow = new BrowserWindow({
@@ -37,6 +70,11 @@ function createWindow(): void {
 
 app.whenReady().then(() => {
   electronApp.setAppUserModelId('com.wikis')
+
+  // Initialize SQLite database and seed initial entries
+  initDatabase()
+  seedInitialEntriesIfEmpty(initialKnowledgeEntries)
+  setupIpcHandlers()
 
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
