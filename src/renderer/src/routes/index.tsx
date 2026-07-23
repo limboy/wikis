@@ -3,7 +3,7 @@ import { useState, useCallback } from 'react'
 import { KnowledgeSidebar } from '@/components/sidebar/knowledge-sidebar'
 import { StackedNotesContainer } from '@/components/notes/stacked-notes-container'
 import { useStackedNotes } from '@/hooks/use-stacked-notes'
-import { getEntriesWithBacklinks } from '@/data/utils'
+import { getEntriesWithBacklinks, sortByDate } from '@/data/utils'
 
 export const Route = createFileRoute('/')({
   component: IndexPage
@@ -19,7 +19,7 @@ function IndexPage() {
     containerRef
   } = useStackedNotes()
 
-  const [sortedEntries, setSortedEntries] = useState(allEntries)
+  const [sortedEntries, setSortedEntries] = useState(() => sortByDate(allEntries))
 
   const handleSelectEntry = useCallback(
     (id: string) => {

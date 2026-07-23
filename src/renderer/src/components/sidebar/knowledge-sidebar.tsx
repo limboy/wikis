@@ -46,9 +46,13 @@ function formatRelativeDate(dateStr: string): string {
   const date = new Date(dateStr)
   const now = new Date()
   const diffMs = now.getTime() - date.getTime()
+
+  // Handle future dates or dates created today
+  if (diffMs <= 0) return '今天'
+
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
 
-  if (diffDays === 0) return '今天'
+  if (diffDays <= 0) return '今天'
   if (diffDays === 1) return '昨天'
   if (diffDays < 7) return `${diffDays} 天前`
   if (diffDays < 30) return `${Math.floor(diffDays / 7)} 周前`

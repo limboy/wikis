@@ -56,6 +56,8 @@ export const knowledgeEntries: KnowledgeEntry[] = [
     deepDive: '实现卡片盒的现代数字工具（如Obsidian, Roam Research）引入了双向链接（Backlinks），使得网络效应更加明显。当卡片积累到一定数量，系统会产生"涌现"（Emergence）效应，你会在看似不相关的概念之间发现新的联系，系统真正成为了你的"第二大脑"。\n\n然而，工具不是关键，核心在于"用自己的话重述"和"建立有意义的链接"。单纯的复制粘贴是对卡片盒最大的误用。',
     related: [
       { targetId: 'luhmanns-zettelkasten', type: 'part_of' },
+      { targetId: 'zettelkasten-principles', type: 'requires' },
+      { targetId: 'knowledge-emergence', type: 'related_to' },
       { targetId: 'evergreen-notes', type: 'related_to' },
       { targetId: 'generation-effect', type: 'related_to' }
     ],
@@ -204,6 +206,9 @@ export const knowledgeEntries: KnowledgeEntry[] = [
     deepDive: '卢曼的卡片盒有两个非常关键的原则：一是所有内容必须用自己的话简短记录，绝不直接摘抄；二是一定要建立卡片与卡片之间的链接。如果没有链接，一张卡片就会在几万张卡片的海洋中永远遗失。\n\n今天我们用Roam或Obsidian等数字工具可以瞬间实现双向链接，但在前数字时代，卢曼用纸笔系统完成了这一切，展现了惊人的系统性思维。',
     related: [
       { targetId: 'zettelkasten', type: 'related_to' },
+      { targetId: 'zettelkasten-principles', type: 'requires' },
+      { targetId: 'knowledge-emergence', type: 'related_to' },
+      { targetId: 'luhmann-partner-quote', type: 'related_to' },
       { targetId: 'evergreen-notes', type: 'related_to' }
     ],
     source: {
@@ -384,5 +389,71 @@ export const knowledgeEntries: KnowledgeEntry[] = [
     tags: ['学习理论', '网络结构', '时代思潮'],
     createdAt: '2024-07-01T08:00:00Z',
     updatedAt: '2024-07-05T09:10:00Z'
+  },
+  {
+    id: 'zettelkasten-principles',
+    title: '卡片盒笔记法的核心机制',
+    type: 'concept',
+    oneLiner: '由“原子化内容、无限分支编码、网状双向链接”三要素构建的网络化思考体系。',
+    whatItIs: '卡片盒笔记法包含三大核心底层机制：\n1. **原子化（Atomicity）**：一张卡片仅记录一个独立想法，且必须用自己的话重述，禁止直接机械剪藏。\n2. **无限分支编码（Branching ID）**：采用字母与数字组合的分支编号（如 1/1, 1/1a），打破树状目录限制，允许在任意节点无限插入并延伸思考。\n3. **网状双向链接（Bi-directional Links）**：显式建立卡片间的横向交叉链接，让跨学科概念产生偶发碰撞（Serendipity）。',
+    whyItMatters: '解决了传统树状文件夹分类僵化、跨学科资料难以归档、以及收藏后沦为“数字垃圾”的问题。它让知识库具备自组织能力与抗脆弱性。',
+    deepDive: '在卡片盒体系中，信息不是被死板地保存在某个位置，而是存在于节点（Node）与链接（Edge）构成的网络拓扑中。当知识积累到临界量时，检索不再是单向查找，而是顺着链接提取上下文，实现高效率的创新与输出。',
+    related: [
+      { targetId: 'zettelkasten', type: 'part_of' },
+      { targetId: 'luhmanns-zettelkasten', type: 'derived_from' },
+      { targetId: 'knowledge-emergence', type: 'requires' }
+    ],
+    source: {
+      type: 'book',
+      title: '《卡片盒笔记法》',
+      author: '申克·阿伦斯'
+    },
+    tags: ['卡片盒', '思考模型', '知识管理', '底层机制'],
+    createdAt: '2026-07-23T10:30:00Z',
+    updatedAt: '2026-07-23T10:30:00Z'
+  },
+  {
+    id: 'knowledge-emergence',
+    title: '知识涌现与自组织系统',
+    type: 'concept',
+    oneLiner: '当大量原子知识卡片建立网络链接后，系统自发产生超越个体之和的全新洞见。',
+    whatItIs: '涌现（Emergence）是系统科学与复杂性科学的核心概念。在知识管理中，当离散的原子卡片通过双向链接相互交织成网后，系统不再是被动的资料仓储，而是演变成一个自组织网络，主动向创作者揭示未曾预料到的模式与关联。',
+    whyItMatters: '它颠覆了“自上而下预先规划大纲”的传统写作范式，转为“自下而上自然生长”。创作者无需面对空白页苦思冥想，只需从网状系统中拉取已有的关联卡片，文章便自然而然地“涌现”出来。',
+    deepDive: '卢曼的卡片盒在积累数万张卡片后表现出了极强的涌现性。现代数字工具（如Obsidian, Roam）通过图谱可视化与双向链接进一步放大了这一效应。掌握知识涌现机制，是从“收集者”蜕变为“创造者”的关键跃迁。',
+    related: [
+      { targetId: 'zettelkasten-principles', type: 'related_to' },
+      { targetId: 'luhmanns-zettelkasten', type: 'related_to' },
+      { targetId: 'luhmann-partner-quote', type: 'related_to' }
+    ],
+    source: {
+      type: 'book',
+      title: '《社会系统》',
+      author: '尼克拉斯·卢曼'
+    },
+    tags: ['系统论', '涌现', '自组织', '复杂性'],
+    createdAt: '2026-07-23T10:30:00Z',
+    updatedAt: '2026-07-23T10:30:00Z'
+  },
+  {
+    id: 'luhmann-partner-quote',
+    title: '卢曼：卡片盒是我的思考对话伙伴',
+    type: 'excerpt',
+    oneLiner: '卢曼将卡片盒定义为具有协同思考能力的“外置对话者”而非简单的存储工具。',
+    whatItIs: '卢曼原话摘录：\n“我并不是一个人在思考。我的工作主要由我的卡片盒完成，它是我协同思考的对话伙伴（Communication Partner）。它不仅能记下我遗忘的事物，还能通过意想不到的链接提出我未曾设想过的问题。”',
+    whyItMatters: '重新定义了人类与笔记工具的关系——工具不只是被动的冷存储硬盘，而是可以与主观意识产生双向反馈的“协同思考者”（Co-thinker）。',
+    deepDive: '用费曼重述法理解：知识积累不是单向的存入，而是通过建立网络连接向工具“提问”。卡片盒以偶发性惊喜（Serendipity）给予反馈，帮助创作者跨越元认知盲区，实现真正的外置第二大脑。',
+    related: [
+      { targetId: 'luhmanns-zettelkasten', type: 'derived_from' },
+      { targetId: 'zettelkasten', type: 'related_to' },
+      { targetId: 'knowledge-emergence', type: 'related_to' }
+    ],
+    source: {
+      type: 'article',
+      title: '《与卡片盒对话》',
+      author: '尼克拉斯·卢曼'
+    },
+    tags: ['名言摘录', '卢曼', '第二大脑', '人机协同'],
+    createdAt: '2026-07-23T10:30:00Z',
+    updatedAt: '2026-07-23T10:30:00Z'
   }
 ]
