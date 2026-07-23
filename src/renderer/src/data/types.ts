@@ -1,4 +1,4 @@
-export type KnowledgeType = 'concept' | 'story' | 'event' | 'excerpt' | 'general'
+export type KnowledgeType = 'concept' | 'viewpoint' | 'narrative' | 'reflection'
 
 export type RelationType =
   | 'derived_from'
@@ -67,8 +67,7 @@ export const RELATION_REVERSE_LABELS: Record<RelationType, string> = {
 
 export const KNOWLEDGE_TYPE_LABELS: Record<KnowledgeType, string> = {
   concept: '概念',
-  story: '故事',
-  event: '事件',
-  excerpt: '摘录',
-  general: '笔记'
+  viewpoint: '观点',
+  narrative: '叙事',
+  reflection: '感悟'
 }

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Lightbulb, BookOpen, Quote, Calendar, Hash } from 'lucide-react'
+import { Lightbulb, BookOpen, MessageSquare, Sparkles } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { KnowledgeEntryWithBacklinks, KnowledgeType, KNOWLEDGE_TYPE_LABELS } from '@/data/types'
 import { sortByDate, shuffleEntries } from '@/data/utils'
@@ -21,24 +21,21 @@ interface KnowledgeSidebarProps {
 
 const typeColorClasses: Record<KnowledgeType, string> = {
   concept: 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300',
-  story: 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300',
-  event: 'bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300',
-  excerpt: 'bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300',
-  general: 'bg-muted text-muted-foreground'
+  viewpoint: 'bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300',
+  narrative: 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300',
+  reflection: 'bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300'
 }
 
 function getTypeIcon(type: KnowledgeType) {
   switch (type) {
     case 'concept':
       return <Lightbulb className="size-3 shrink-0" />
-    case 'story':
+    case 'viewpoint':
+      return <MessageSquare className="size-3 shrink-0" />
+    case 'narrative':
       return <BookOpen className="size-3 shrink-0" />
-    case 'event':
-      return <Calendar className="size-3 shrink-0" />
-    case 'excerpt':
-      return <Quote className="size-3 shrink-0" />
-    case 'general':
-      return <Hash className="size-3 shrink-0" />
+    case 'reflection':
+      return <Sparkles className="size-3 shrink-0" />
   }
 }
 
@@ -63,9 +60,9 @@ function formatRelativeDate(dateStr: string): string {
 const TYPE_FILTER_OPTIONS: Array<{ key: KnowledgeType | 'all'; label: string }> = [
   { key: 'all', label: '不限' },
   { key: 'concept', label: '概念' },
-  { key: 'story', label: '故事' },
-  { key: 'event', label: '事件' },
-  { key: 'excerpt', label: '摘录' }
+  { key: 'viewpoint', label: '观点' },
+  { key: 'narrative', label: '叙事' },
+  { key: 'reflection', label: '感悟' }
 ]
 
 export function KnowledgeSidebar({

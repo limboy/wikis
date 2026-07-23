@@ -3,7 +3,7 @@ import { app } from 'electron'
 import { join } from 'path'
 import { existsSync, mkdirSync } from 'fs'
 
-export type KnowledgeType = 'concept' | 'story' | 'event' | 'excerpt' | 'general'
+export type KnowledgeType = 'concept' | 'viewpoint' | 'narrative' | 'reflection'
 
 export type RelationType =
   | 'derived_from'

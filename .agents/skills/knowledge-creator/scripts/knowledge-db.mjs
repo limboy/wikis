@@ -8,7 +8,7 @@ import { homedir } from 'node:os'
 import process from 'node:process'
 import { isDeepStrictEqual } from 'node:util'
 
-const KNOWLEDGE_TYPES = new Set(['concept', 'story', 'event', 'excerpt', 'general'])
+const KNOWLEDGE_TYPES = new Set(['concept', 'viewpoint', 'narrative', 'reflection'])
 const RELATION_TYPES = new Set([
   'derived_from',
   'requires',
