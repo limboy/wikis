@@ -1,38 +1,77 @@
 # Wikis
 
-A personal knowledge base built with Electron, React, and TypeScript.
+A modern personal knowledge base desktop application for macOS built with Electron, React, TypeScript, and SQLite.
 
-## Recommended IDE Setup
+## Features
 
-- [VSCode](https://code.visualstudio.com/) + [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) + [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+- **Structured Knowledge Cards**: Categorize notes into Concepts, Viewpoints, Narratives, and Reflections (概念、观点、叙事、感悟).
+- **Interlinked Knowledge Network**: Define directional relationships between notes (`derived_from`, `requires`, `related_to`, `contrasts_with`, `part_of`).
+- **Stacked / Multi-Pane Interface**: Open and compare multiple notes and source references side-by-side.
+- **Source & Tag Tracking**: Attribute entries to books, articles, videos, podcasts, conversations, or personal thoughts with tag filtering.
+- **Markdown & GFM Support**: Full Markdown rendering with CJK formatting, task lists, and table formatting.
+- **Local-First & Offline**: Stored in a high-performance local SQLite database (`better-sqlite3`) with WAL mode.
+- **AI Agent Skill**: Built-in agent skill (`knowledge-creator`) to extract, structure, and maintain knowledge cards using AI.
 
-## Project Setup
+## Tech Stack
 
-### Install
+- **Framework**: Electron + Vite (`electron-vite`)
+- **Frontend**: React 19, TypeScript, TanStack Router, Tailwind CSS v4, Base UI
+- **Database**: SQLite (`better-sqlite3`)
+- **Markdown Engine**: Unified / Remark / Rehype
+
+## Getting Started
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) (v18 or higher recommended)
+- macOS (for building macOS native packages)
+
+### Installation
 
 ```bash
-$ npm install
+npm install
 ```
 
 ### Development
 
-```bash
-$ npm run dev
-```
-
-### Production build for this Mac
+Start the app in development mode with hot reload:
 
 ```bash
-$ npm run build:mac
+npm run dev
 ```
 
-The build uses `build/wikis.logo.icon` as the macOS Icon Composer source. It
-requires macOS, Xcode 26 or newer, and dependencies installed with `npm ci`.
-The native `.app`, DMG, and ZIP are written to `dist/`. The script applies an
-ad-hoc signature suitable for running the app on the Mac that built it; public
-distribution still requires Developer ID signing and notarization.
+## Production Build
 
-The production build enforces a runtime-dependency allowlist, keeps only the
-native SQLite binding for the current Mac architecture, limits Electron locales
-to English and Simplified Chinese, and fails if the app grows beyond 320 MiB.
-Renderer and build-time packages must remain in `devDependencies`.
+Build the native macOS app bundle (`.app`), DMG, and ZIP installer:
+
+```bash
+npm run build:mac
+```
+
+*Note: Output artifacts are written to `dist/`.*
+
+## Available Scripts
+
+| Script | Description |
+| --- | --- |
+| `npm run dev` | Start development server with Electron Vite |
+| `npm run build` | Compile TypeScript and build web assets |
+| `npm run build:mac` | Build production macOS application bundle & installers |
+| `npm run typecheck` | Run TypeScript type checks (node & web targets) |
+| `npm run lint` | Run ESLint checks |
+| `npm run format` | Format code using Prettier |
+
+## Data Storage & Configuration
+
+By default, Wikis stores your local SQLite database at:
+- **macOS**: `~/Library/Application Support/wikis/wikis.db`
+
+You can override the database location by setting the `WIKIS_DB_PATH` environment variable:
+
+```bash
+WIKIS_DB_PATH=/path/to/custom/wikis.db npm run dev
+```
+
+## Recommended IDE Setup
+
+- [VSCode](https://code.visualstudio.com/) + [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) + [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) + [Tailwind CSS IntelliSense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss)
