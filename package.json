@@ -4,6 +4,7 @@
   "description": "A personal knowledge base for macOS",
   "main": "./out/main/index.js",
   "author": "Limboy",
+  "license": "MIT",
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint --cache .",

@@ -6,3 +6,18 @@ out
 *.log*
 !build/wikis.logo.icon/
 !build/wikis.logo.icon/**
+
+# Environment & Secrets
+.env
+.env.*
+
+# SQLite Databases & Local Data
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
+# Temporary & Media Files
+*.vtt
+tmp/
+
