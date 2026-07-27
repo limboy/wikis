@@ -32,6 +32,21 @@ function IndexPage() {
 
   useEffect(() => {
     loadData()
+
+    const unsubDb = window.api?.db?.onUpdated?.(() => {
+      loadData()
+    })
+
+    const handleFocus = () => {
+      loadData()
+    }
+
+    window.addEventListener('focus', handleFocus)
+
+    return () => {
+      if (unsubDb) unsubDb()
+      window.removeEventListener('focus', handleFocus)
+    }
   }, [loadData])
 
   const handleSelectEntry = useCallback(

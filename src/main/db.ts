@@ -39,10 +39,14 @@ export interface KnowledgeEntry {
 
 let db: Database.Database | null = null
 
+export function getDatabasePath(customPath?: string): string {
+  return customPath || process.env.WIKIS_DB_PATH || join(app.getPath('userData'), 'wikis.db')
+}
+
 export function initDatabase(customPath?: string): Database.Database {
   if (db && !customPath) return db
 
-  const dbPath = customPath || join(app.getPath('userData'), 'wikis.db')
+  const dbPath = getDatabasePath(customPath)
   const dir = join(dbPath, '..')
   if (!existsSync(dir)) {
     mkdirSync(dir, { recursive: true })

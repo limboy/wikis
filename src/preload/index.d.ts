@@ -7,6 +7,7 @@ export interface DbAPI {
   createEntry: (entry: KnowledgeEntry) => Promise<KnowledgeEntry>
   updateEntry: (id: string, entry: KnowledgeEntry) => Promise<KnowledgeEntry>
   deleteEntry: (id: string) => Promise<boolean>
+  onUpdated: (callback: () => void) => () => void
 }
 
 declare global {

@@ -8,7 +8,14 @@ const api = {
     getEntryById: (id: string) => ipcRenderer.invoke('db:getEntryById', id),
     createEntry: (entry: any) => ipcRenderer.invoke('db:createEntry', entry),
     updateEntry: (id: string, entry: any) => ipcRenderer.invoke('db:updateEntry', id, entry),
-    deleteEntry: (id: string) => ipcRenderer.invoke('db:deleteEntry', id)
+    deleteEntry: (id: string) => ipcRenderer.invoke('db:deleteEntry', id),
+    onUpdated: (callback: () => void) => {
+      const listener = () => callback()
+      ipcRenderer.on('db:updated', listener)
+      return () => {
+        ipcRenderer.removeListener('db:updated', listener)
+      }
+    }
   }
 }
 
