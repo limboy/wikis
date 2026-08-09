@@ -170,12 +170,12 @@
   margin-bottom: 0.5rem;
 }
 .markdown-body h2 {
-  font-size: 1.125rem;
+  font-size: 1.25rem;
   font-weight: 600;
   line-height: 1.4;
   color: var(--foreground);
   margin-top: 1rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
 }
 .markdown-body h3 {
   font-size: 1rem;
