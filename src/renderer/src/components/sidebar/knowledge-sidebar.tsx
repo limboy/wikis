@@ -1,15 +1,8 @@
 import { useState, type JSX } from 'react'
-import { Lightbulb, BookOpen, MessageSquare, Sparkles } from 'lucide-react'
+import { Lightbulb, BookOpen, MessageSquare, Sparkles, Shuffle } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { KnowledgeEntryWithBacklinks, KnowledgeType, KNOWLEDGE_TYPE_LABELS } from '@/data/types'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select'
 
 export type SortMode = 'newest' | 'shuffle'
 
@@ -76,9 +69,8 @@ export function KnowledgeSidebar({
 }: KnowledgeSidebarProps): JSX.Element {
   const [selectedType, setSelectedType] = useState<KnowledgeType | 'all'>('all')
 
-  const handleSortChange = (value: string | null): void => {
-    if (!value) return
-    onSortModeChange(value as SortMode)
+  const handleShuffleClick = (): void => {
+    onSortModeChange(sortMode === 'shuffle' ? 'newest' : 'shuffle')
   }
 
   const filteredEntries =
@@ -95,15 +87,23 @@ export function KnowledgeSidebar({
           className="flex items-center justify-between w-full"
           style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
         >
-          <Select value={sortMode} onValueChange={handleSortChange}>
-            <SelectTrigger className="h-8 font-bold text-lg tracking-tight border-none bg-transparent hover:bg-muted/50 p-1.5 -ml-1.5 focus:ring-0 focus-visible:ring-0 shadow-none cursor-pointer">
-              <SelectValue placeholder="Newest" />
-            </SelectTrigger>
-            <SelectContent align="start" alignItemWithTrigger={false} side="bottom" sideOffset={4}>
-              <SelectItem value="newest">Newest</SelectItem>
-              <SelectItem value="shuffle">Shuffle</SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="flex items-center gap-1">
+            <h1 className="font-bold text-lg tracking-tight px-1.5">Wikis</h1>
+            <button
+              type="button"
+              onClick={handleShuffleClick}
+              aria-pressed={sortMode === 'shuffle'}
+              title="Shuffle"
+              className={cn(
+                'flex items-center justify-center size-7 rounded-md cursor-pointer transition-colors',
+                sortMode === 'shuffle'
+                  ? 'bg-muted text-foreground'
+                  : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+              )}
+            >
+              <Shuffle className="size-3.5" />
+            </button>
+          </div>
 
           <span className="px-2 py-0.5 rounded-full bg-muted text-xs font-medium text-muted-foreground">
             {filteredEntries.length}
