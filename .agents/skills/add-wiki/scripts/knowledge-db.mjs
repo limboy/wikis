@@ -71,16 +71,31 @@ function parseArgs(argv) {
 function defaultDbPath() {
   if (process.env.WIKIS_DB_PATH) return process.env.WIKIS_DB_PATH
 
+  let userDataDir
   if (process.platform === 'darwin') {
-    return join(homedir(), 'Library', 'Application Support', 'wikis', 'wikis.db')
-  }
-  if (process.platform === 'win32') {
+    userDataDir = join(homedir(), 'Library', 'Application Support', 'wikis')
+  } else if (process.platform === 'win32') {
     const appData = process.env.APPDATA || join(homedir(), 'AppData', 'Roaming')
-    return join(appData, 'wikis', 'wikis.db')
+    userDataDir = join(appData, 'wikis')
+  } else {
+    const configRoot = process.env.XDG_CONFIG_HOME || join(homedir(), '.config')
+    userDataDir = join(configRoot, 'wikis')
   }
 
-  const configRoot = process.env.XDG_CONFIG_HOME || join(homedir(), '.config')
-  return join(configRoot, 'wikis', 'wikis.db')
+  try {
+    const settingsFile = join(userDataDir, 'settings.json')
+    if (existsSync(settingsFile)) {
+      const raw = readFileSync(settingsFile, 'utf8')
+      const parsed = JSON.parse(raw)
+      if (parsed && typeof parsed.dataDir === 'string' && parsed.dataDir.trim()) {
+        return join(parsed.dataDir.trim(), 'wikis.db')
+      }
+    }
+  } catch {
+    // Ignore settings read errors and fall back to default path
+  }
+
+  return join(userDataDir, 'wikis.db')
 }
 
 function normalizePath(input) {
