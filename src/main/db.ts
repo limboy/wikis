@@ -1,7 +1,7 @@
 import Database from 'better-sqlite3'
-import { app } from 'electron'
 import { dirname, join } from 'path'
 import { existsSync, mkdirSync } from 'fs'
+import { getConfiguredDataDir } from './settings'
 import type {
   KnowledgeEntry,
   KnowledgeType,
@@ -36,7 +36,7 @@ interface EntryRow {
 let db: Database.Database | null = null
 
 export function getDatabasePath(customPath?: string): string {
-  return customPath || process.env.WIKIS_DB_PATH || join(app.getPath('userData'), 'wikis.db')
+  return customPath || process.env.WIKIS_DB_PATH || join(getConfiguredDataDir(), 'wikis.db')
 }
 
 export function initDatabase(customPath?: string): Database.Database {
@@ -60,6 +60,18 @@ export function initDatabase(customPath?: string): Database.Database {
     db = instance
   }
   return instance
+}
+
+/**
+ * Releases the singleton connection so the underlying files can be moved or
+ * deleted (e.g. before relocating the data directory). The next call to
+ * `initDatabase()` reopens at whatever `getDatabasePath()` resolves to then.
+ */
+export function closeDatabase(): void {
+  if (db) {
+    db.close()
+    db = null
+  }
 }
 
 /**

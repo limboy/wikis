@@ -1,10 +1,11 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, Menu, nativeTheme } from 'electron'
 import { join } from 'path'
 import { pathToFileURL } from 'url'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import {
   initDatabase,
+  closeDatabase,
   seedInitialEntriesIfEmpty,
   getAllEntries,
   getEntryById,
@@ -15,6 +16,15 @@ import {
 import { validateEntry, validateId } from './validation'
 import { isRendererUrl, isSafeExternalUrl } from './navigation'
 import { initialKnowledgeEntries } from './initial-data'
+import { buildApplicationMenu } from './menu'
+import {
+  getAppSettings,
+  applyAppearance,
+  setAppearance,
+  chooseDataDirectory,
+  setDataLocation
+} from './settings'
+import type { AppearanceMode } from '../shared/types'
 
 /**
  * Tells open windows to refetch after this process writes to the database.
@@ -58,10 +68,61 @@ function setupIpcHandlers(): void {
   })
 }
 
+function setupSettingsIpcHandlers(): void {
+  // Sync (not handle/invoke) on purpose: preload reads this before the page's
+  // own scripts run, so it can apply the dark class ahead of first paint
+  // instead of racing an async round trip that loses on every restart.
+  ipcMain.on('settings:getSync', (event) => {
+    event.returnValue = getAppSettings()
+  })
+
+  ipcMain.handle('settings:get', () => getAppSettings())
+
+  ipcMain.handle('settings:setAppearance', (_, mode: unknown) => {
+    if (mode !== 'system' && mode !== 'light' && mode !== 'dark') {
+      throw new Error('Invalid appearance mode')
+    }
+    return setAppearance(mode as AppearanceMode)
+  })
+
+  ipcMain.handle('settings:chooseDataDirectory', () => chooseDataDirectory())
+
+  ipcMain.handle('settings:setDataLocation', (_, payload: unknown) => {
+    if (
+      typeof payload !== 'object' ||
+      payload === null ||
+      typeof (payload as { dir?: unknown }).dir !== 'string'
+    ) {
+      throw new Error('Invalid data location payload')
+    }
+    const { dir, moveExisting } = payload as { dir: string; moveExisting?: boolean }
+    const result = setDataLocation({ dir, moveExisting: moveExisting !== false }, closeDatabase)
+
+    // The renderer needs to see this response before the process tears down,
+    // so the restart is deferred rather than fired synchronously here.
+    if (result.ok) {
+      setTimeout(() => {
+        app.relaunch()
+        app.exit(0)
+      }, 300)
+    }
+
+    return result
+  })
+}
+
 function openExternalIfSafe(url: string): void {
   if (isSafeExternalUrl(url)) {
     shell.openExternal(url)
   }
+}
+
+// Matches app.css's --background for each theme (light: oklch(1 0 0), dark:
+// oklch(0.145 0 0)). Electron paints this before any content does, so a
+// close match keeps the window shell from flashing white while dark content
+// loads underneath — the preload class fix handles the content itself.
+function resolveBackgroundColor(): string {
+  return nativeTheme.shouldUseDarkColors ? '#0a0a0a' : '#ffffff'
 }
 
 function createWindow(): void {
@@ -71,6 +132,7 @@ function createWindow(): void {
     minWidth: 900,
     minHeight: 600,
     show: false,
+    backgroundColor: resolveBackgroundColor(),
     titleBarStyle: 'hiddenInset',
     trafficLightPosition: { x: 16, y: 16 },
     ...(process.platform === 'linux' ? { icon } : {}),
@@ -107,13 +169,59 @@ function createWindow(): void {
   })
 }
 
+let settingsWindow: BrowserWindow | null = null
+
+/**
+ * Settings lives in its own small window (macOS Preferences-style) rather
+ * than a modal, sharing the renderer's main.tsx entry — the `#/settings`
+ * hash on the load URL is how that entry decides which route to mount.
+ */
+function createSettingsWindow(): void {
+  if (settingsWindow && !settingsWindow.isDestroyed()) {
+    settingsWindow.show()
+    settingsWindow.focus()
+    return
+  }
+
+  settingsWindow = new BrowserWindow({
+    width: 560,
+    height: 480,
+    resizable: false,
+    minimizable: false,
+    maximizable: false,
+    fullscreenable: false,
+    title: '设置',
+    backgroundColor: resolveBackgroundColor(),
+    titleBarStyle: 'hiddenInset',
+    trafficLightPosition: { x: 16, y: 16 },
+    webPreferences: {
+      preload: join(__dirname, '../preload/index.js'),
+      sandbox: false
+    }
+  })
+
+  settingsWindow.on('closed', () => {
+    settingsWindow = null
+  })
+
+  if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
+    settingsWindow.loadURL(`${process.env['ELECTRON_RENDERER_URL']}#/settings`)
+  } else {
+    settingsWindow.loadFile(join(__dirname, '../renderer/index.html'), { hash: '/settings' })
+  }
+}
+
 app.whenReady().then(() => {
   electronApp.setAppUserModelId('com.wikis')
+
+  applyAppearance(getAppSettings().appearance)
+  Menu.setApplicationMenu(buildApplicationMenu({ onOpenSettings: createSettingsWindow }))
 
   // Initialize SQLite database and seed initial entries
   initDatabase()
   seedInitialEntriesIfEmpty(initialKnowledgeEntries)
   setupIpcHandlers()
+  setupSettingsIpcHandlers()
 
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)

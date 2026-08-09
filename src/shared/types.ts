@@ -41,3 +41,18 @@ export interface KnowledgeEntry {
   createdAt: string // ISO date
   updatedAt: string
 }
+
+/**
+ * App-level preferences, distinct from knowledge data. Persisted by the main
+ * process and shared with the renderer over IPC.
+ */
+export type AppearanceMode = 'system' | 'light' | 'dark'
+
+export interface AppSettings {
+  appearance: AppearanceMode
+  /** Absolute path to the directory the SQLite database currently lives in. */
+  dataDir: string
+  /** What `dataDir` resolves to when the user hasn't overridden it. */
+  defaultDataDir: string
+  isDefaultDataDir: boolean
+}
