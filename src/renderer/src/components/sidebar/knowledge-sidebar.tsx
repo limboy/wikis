@@ -1,8 +1,7 @@
-import { useState } from 'react'
+import { useState, type JSX } from 'react'
 import { Lightbulb, BookOpen, MessageSquare, Sparkles } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { KnowledgeEntryWithBacklinks, KnowledgeType, KNOWLEDGE_TYPE_LABELS } from '@/data/types'
-import { sortByDate, shuffleEntries } from '@/data/utils'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
   Select,
@@ -12,11 +11,14 @@ import {
   SelectValue
 } from '@/components/ui/select'
 
+export type SortMode = 'newest' | 'shuffle'
+
 interface KnowledgeSidebarProps {
   entries: KnowledgeEntryWithBacklinks[]
   activeNoteIds: string[]
   onSelectEntry: (id: string) => void
-  onEntriesChange: (entries: KnowledgeEntryWithBacklinks[]) => void
+  sortMode: SortMode
+  onSortModeChange: (mode: SortMode) => void
 }
 
 const typeColorClasses: Record<KnowledgeType, string> = {
@@ -26,7 +28,7 @@ const typeColorClasses: Record<KnowledgeType, string> = {
   reflection: 'bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300'
 }
 
-function getTypeIcon(type: KnowledgeType) {
+function getTypeIcon(type: KnowledgeType): JSX.Element {
   switch (type) {
     case 'concept':
       return <Lightbulb className="size-3 shrink-0" />
@@ -69,20 +71,14 @@ export function KnowledgeSidebar({
   entries,
   activeNoteIds,
   onSelectEntry,
-  onEntriesChange
-}: KnowledgeSidebarProps) {
-  const [sortMode, setSortMode] = useState<'newest' | 'shuffle'>('newest')
+  sortMode,
+  onSortModeChange
+}: KnowledgeSidebarProps): JSX.Element {
   const [selectedType, setSelectedType] = useState<KnowledgeType | 'all'>('all')
 
-  const handleSortChange = (value: string | null) => {
+  const handleSortChange = (value: string | null): void => {
     if (!value) return
-    const mode = value as 'newest' | 'shuffle'
-    setSortMode(mode)
-    if (mode === 'newest') {
-      onEntriesChange(sortByDate(entries))
-    } else if (mode === 'shuffle') {
-      onEntriesChange(shuffleEntries(entries))
-    }
+    onSortModeChange(value as SortMode)
   }
 
   const filteredEntries =
@@ -140,9 +136,7 @@ export function KnowledgeSidebar({
       <div className="flex-1 overflow-y-auto">
         <div className="flex flex-col">
           {filteredEntries.length === 0 ? (
-            <div className="p-8 text-center text-xs text-muted-foreground">
-              暂无符合条件的条目
-            </div>
+            <div className="p-8 text-center text-xs text-muted-foreground">暂无符合条件的条目</div>
           ) : (
             filteredEntries.map((entry) => {
               const isActive = activeNoteIds.includes(entry.id)

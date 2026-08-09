@@ -23,7 +23,10 @@ export async function createKnowledgeEntry(entry: KnowledgeEntry): Promise<Knowl
   return entry
 }
 
-export async function updateKnowledgeEntry(id: string, entry: KnowledgeEntry): Promise<KnowledgeEntry> {
+export async function updateKnowledgeEntry(
+  id: string,
+  entry: KnowledgeEntry
+): Promise<KnowledgeEntry> {
   if (typeof window !== 'undefined' && window.api?.db) {
     return await window.api.db.updateEntry(id, entry)
   }

@@ -1,4 +1,4 @@
-import { RefObject } from 'react'
+import { RefObject, type JSX } from 'react'
 import { KnowledgeEntryWithBacklinks } from '@/data/types'
 import { getEntryById, getSourceDataByTitle } from '@/data/utils'
 import { NotePane } from './note-pane'
@@ -18,7 +18,7 @@ export function StackedNotesContainer({
   onOpenNote,
   onCloseNote,
   containerRef
-}: StackedNotesContainerProps) {
+}: StackedNotesContainerProps): JSX.Element {
   if (stackedNoteIds.length === 0) {
     return (
       <div className="flex-1 flex items-center justify-center text-muted-foreground">

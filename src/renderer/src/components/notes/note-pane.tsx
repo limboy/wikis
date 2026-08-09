@@ -1,11 +1,7 @@
-import { useRef } from 'react'
+import { useRef, type JSX } from 'react'
 import { X, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import {
-  KnowledgeEntryWithBacklinks,
-  KnowledgeType,
-  KNOWLEDGE_TYPE_LABELS
-} from '@/data/types'
+import { KnowledgeEntryWithBacklinks, KnowledgeType, KNOWLEDGE_TYPE_LABELS } from '@/data/types'
 import { getEntryById } from '@/data/utils'
 import { Button } from '@/components/ui/button'
 import { MarkdownRenderer } from '@/components/ui/markdown-renderer'
@@ -33,7 +29,7 @@ export function NotePane({
   totalPanes,
   onOpenNote,
   onClose
-}: NotePaneProps) {
+}: NotePaneProps): JSX.Element {
   const paneRef = useRef<HTMLDivElement>(null)
 
   const relatedIds = Array.from(new Set(entry.related?.map((l) => l.targetId) || []))
@@ -163,7 +159,7 @@ function RelatedCard({
   noteId: string
   allEntries?: KnowledgeEntryWithBacklinks[]
   onClick: () => void
-}) {
+}): JSX.Element {
   const targetEntry = getEntryById(noteId, allEntries)
   if (!targetEntry) {
     return (

@@ -1,5 +1,6 @@
 import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join, dirname } from 'path'
+import { pathToFileURL } from 'url'
 import { watch, existsSync } from 'fs'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
@@ -11,9 +12,10 @@ import {
   getEntryById,
   createEntry,
   updateEntry,
-  deleteEntry,
-  KnowledgeEntry
+  deleteEntry
 } from './db'
+import { validateEntry, validateId } from './validation'
+import { isRendererUrl, isSafeExternalUrl } from './navigation'
 import { initialKnowledgeEntries } from './initial-data'
 
 let watchDebounceTimer: NodeJS.Timeout | null = null
@@ -56,27 +58,34 @@ function setupIpcHandlers(): void {
     return getAllEntries()
   })
 
-  ipcMain.handle('db:getEntryById', (_, id: string) => {
-    return getEntryById(id)
+  ipcMain.handle('db:getEntryById', (_, id: unknown) => {
+    return getEntryById(validateId(id))
   })
 
-  ipcMain.handle('db:createEntry', (_, entry: KnowledgeEntry) => {
-    const res = createEntry(entry)
+  ipcMain.handle('db:createEntry', (_, entry: unknown) => {
+    const res = createEntry(validateEntry(entry))
     notifyDbUpdated()
     return res
   })
 
-  ipcMain.handle('db:updateEntry', (_, id: string, entry: KnowledgeEntry) => {
-    const res = updateEntry(id, entry)
+  ipcMain.handle('db:updateEntry', (_, id: unknown, entry: unknown) => {
+    const entryId = validateId(id)
+    const res = updateEntry(entryId, validateEntry(entry, entryId))
     notifyDbUpdated()
     return res
   })
 
-  ipcMain.handle('db:deleteEntry', (_, id: string) => {
-    const res = deleteEntry(id)
+  ipcMain.handle('db:deleteEntry', (_, id: unknown) => {
+    const res = deleteEntry(validateId(id))
     notifyDbUpdated()
     return res
   })
+}
+
+function openExternalIfSafe(url: string): void {
+  if (isSafeExternalUrl(url)) {
+    shell.openExternal(url)
+  }
 }
 
 function createWindow(): void {
@@ -100,15 +109,26 @@ function createWindow(): void {
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
-    shell.openExternal(details.url)
+    openExternalIfSafe(details.url)
     return { action: 'deny' }
   })
 
+  let rendererEntryUrl: string
+
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-    mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
+    rendererEntryUrl = process.env['ELECTRON_RENDERER_URL']
+    mainWindow.loadURL(rendererEntryUrl)
   } else {
-    mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
+    const indexPath = join(__dirname, '../renderer/index.html')
+    rendererEntryUrl = pathToFileURL(indexPath).toString()
+    mainWindow.loadFile(indexPath)
   }
+
+  mainWindow.webContents.on('will-navigate', (event, url) => {
+    if (isRendererUrl(url, rendererEntryUrl)) return
+    event.preventDefault()
+    openExternalIfSafe(url)
+  })
 }
 
 app.whenReady().then(() => {

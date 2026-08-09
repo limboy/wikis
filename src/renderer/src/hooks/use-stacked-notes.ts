@@ -1,6 +1,16 @@
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, type RefObject } from 'react'
 
-export function useStackedNotes(initialNoteId?: string) {
+export interface UseStackedNotes {
+  stackedNoteIds: string[]
+  openNote: (noteId: string, fromIndex: number) => void
+  selectNote: (noteId: string) => void
+  closeNote: (index: number) => void
+  setInitialNote: (noteId: string) => void
+  containerRef: RefObject<HTMLDivElement | null>
+  scrollToPane: (index: number) => void
+}
+
+export function useStackedNotes(initialNoteId?: string): UseStackedNotes {
   const [stackedNoteIds, setStackedNoteIds] = useState<string[]>(
     initialNoteId ? [initialNoteId] : []
   )

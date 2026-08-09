@@ -5,12 +5,7 @@ import { existsSync, mkdirSync } from 'fs'
 
 export type KnowledgeType = 'concept' | 'viewpoint' | 'narrative' | 'reflection'
 
-export type RelationType =
-  | 'derived_from'
-  | 'requires'
-  | 'related_to'
-  | 'contrasts_with'
-  | 'part_of'
+export type RelationType = 'derived_from' | 'requires' | 'related_to' | 'contrasts_with' | 'part_of'
 
 export interface RelatedLink {
   targetId: string
@@ -33,6 +28,20 @@ export interface KnowledgeEntry {
   source?: Source
   related: RelatedLink[]
   tags: string[]
+  createdAt: string
+  updatedAt: string
+}
+
+interface EntryRow {
+  id: string
+  title: string
+  type: KnowledgeType
+  oneLiner: string
+  content: string | null
+  source_type: Source['type'] | null
+  source_title: string | null
+  source_author: string | null
+  source_url: string | null
   createdAt: string
   updatedAt: string
 }
@@ -116,7 +125,7 @@ export function getAllEntries(customDb?: Database.Database): KnowledgeEntry[] {
     ORDER BY createdAt DESC
   `
     )
-    .all() as any[]
+    .all() as EntryRow[]
 
   const getTagsStmt = database.prepare(`SELECT tag FROM tags WHERE entry_id = ?`)
   const getRelatedStmt = database.prepare(
@@ -166,13 +175,13 @@ export function getEntryById(id: string, customDb?: Database.Database): Knowledg
     WHERE id = ?
   `
     )
-    .get(id) as any
+    .get(id) as EntryRow | undefined
 
   if (!row) return null
 
-  const tagsRows = database
-    .prepare(`SELECT tag FROM tags WHERE entry_id = ?`)
-    .all(id) as { tag: string }[]
+  const tagsRows = database.prepare(`SELECT tag FROM tags WHERE entry_id = ?`).all(id) as {
+    tag: string
+  }[]
   const relatedRows = database
     .prepare(`SELECT target_id as targetId, type FROM related_links WHERE source_id = ?`)
     .all(id) as { targetId: string; type: RelationType }[]
@@ -256,7 +265,11 @@ export function createEntry(entry: KnowledgeEntry, customDb?: Database.Database)
   return getEntryById(entry.id, database)!
 }
 
-export function updateEntry(id: string, entry: KnowledgeEntry, customDb?: Database.Database): KnowledgeEntry {
+export function updateEntry(
+  id: string,
+  entry: KnowledgeEntry,
+  customDb?: Database.Database
+): KnowledgeEntry {
   const database = customDb || initDatabase()
 
   const updateStmt = database.prepare(`
@@ -316,19 +329,43 @@ export function updateEntry(id: string, entry: KnowledgeEntry, customDb?: Databa
 
 export function deleteEntry(id: string, customDb?: Database.Database): boolean {
   const database = customDb || initDatabase()
-  const result = database.prepare(`DELETE FROM entries WHERE id = ?`).run(id)
-  return result.changes > 0
+
+  // related_links only cascades on source_id, so incoming relations have to be
+  // cleared explicitly or other entries keep pointing at an entry that is gone.
+  const deleteIncoming = database.prepare(`DELETE FROM related_links WHERE target_id = ?`)
+  const deleteRow = database.prepare(`DELETE FROM entries WHERE id = ?`)
+
+  const transaction = database.transaction(() => {
+    deleteIncoming.run(id)
+    return deleteRow.run(id).changes > 0
+  })
+
+  return transaction()
 }
 
-export function seedInitialEntriesIfEmpty(initialEntries: KnowledgeEntry[], customDb?: Database.Database): void {
+export function seedInitialEntriesIfEmpty(
+  initialEntries: KnowledgeEntry[],
+  customDb?: Database.Database
+): void {
   const database = customDb || initDatabase()
-  console.log(`[SQLite] Syncing ${initialEntries.length} initial entries into database...`)
+
+  if (initialEntries.length === 0) return
+
+  const { count } = database.prepare(`SELECT COUNT(*) AS count FROM entries`).get() as {
+    count: number
+  }
+  if (count > 0) {
+    console.log(`[SQLite] Database already holds ${count} entries; skipping seed.`)
+    return
+  }
+
+  console.log(`[SQLite] Seeding ${initialEntries.length} initial entries into database...`)
   for (const entry of initialEntries) {
     try {
       createEntry(entry, database)
     } catch (err) {
-      console.error(`[SQLite] Error syncing entry ${entry.id}:`, err)
+      console.error(`[SQLite] Error seeding entry ${entry.id}:`, err)
     }
   }
-  console.log('[SQLite] Syncing completed.')
+  console.log('[SQLite] Seeding completed.')
 }

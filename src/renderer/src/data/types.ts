@@ -1,11 +1,6 @@
 export type KnowledgeType = 'concept' | 'viewpoint' | 'narrative' | 'reflection'
 
-export type RelationType =
-  | 'derived_from'
-  | 'requires'
-  | 'related_to'
-  | 'contrasts_with'
-  | 'part_of'
+export type RelationType = 'derived_from' | 'requires' | 'related_to' | 'contrasts_with' | 'part_of'
 
 export interface RelatedLink {
   targetId: string

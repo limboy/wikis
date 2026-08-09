@@ -1,7 +1,12 @@
-import { useRef } from 'react'
+import { useRef, type JSX } from 'react'
 import { X, ExternalLink } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { Source, KnowledgeType, KNOWLEDGE_TYPE_LABELS, KnowledgeEntryWithBacklinks } from '@/data/types'
+import {
+  Source,
+  KnowledgeType,
+  KNOWLEDGE_TYPE_LABELS,
+  KnowledgeEntryWithBacklinks
+} from '@/data/types'
 import { Button } from '@/components/ui/button'
 
 interface SourcePaneProps {
@@ -27,7 +32,7 @@ export function SourcePane({
   totalPanes,
   onOpenNote,
   onClose
-}: SourcePaneProps) {
+}: SourcePaneProps): JSX.Element {
   const paneRef = useRef<HTMLDivElement>(null)
 
   return (
@@ -40,13 +45,9 @@ export function SourcePane({
           {/* Header */}
           <div className="flex items-start justify-between gap-3">
             <div className="flex flex-col gap-1.5">
-              <h1 className="text-xl font-bold leading-tight">
-                {source.title}
-              </h1>
+              <h1 className="text-xl font-bold leading-tight">{source.title}</h1>
               {source.author && (
-                <span className="text-sm text-muted-foreground font-medium">
-                  {source.author}
-                </span>
+                <span className="text-sm text-muted-foreground font-medium">{source.author}</span>
               )}
             </div>
             {totalPanes > 1 && (
