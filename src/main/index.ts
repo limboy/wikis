@@ -63,6 +63,21 @@ function notifyDbUpdated(): void {
   }
 }
 
+/**
+ * Tells every open window's renderer to re-apply appearance. Each renderer
+ * keeps its own `.dark` class (see preload's synchronous pre-paint pass and
+ * lib/theme.ts), so changing the setting in one window — e.g. the Settings
+ * window — would otherwise leave every other already-open window (the main
+ * window) stuck on the old theme until it's reloaded.
+ */
+function notifyAppearanceChanged(mode: AppearanceMode): void {
+  for (const window of BrowserWindow.getAllWindows()) {
+    if (!window.isDestroyed()) {
+      window.webContents.send('appearance:updated', mode)
+    }
+  }
+}
+
 function setupIpcHandlers(): void {
   ipcMain.handle('db:getAllEntries', () => {
     return getAllEntries()
@@ -106,7 +121,9 @@ function setupSettingsIpcHandlers(): void {
     if (mode !== 'system' && mode !== 'light' && mode !== 'dark') {
       throw new Error('Invalid appearance mode')
     }
-    return setAppearance(mode as AppearanceMode)
+    const result = setAppearance(mode as AppearanceMode)
+    notifyAppearanceChanged(mode as AppearanceMode)
+    return result
   })
 
   ipcMain.handle('settings:chooseDataDirectory', () => chooseDataDirectory())

@@ -42,7 +42,14 @@ const api: { db: DbAPI; settings: SettingsAPI } = {
     setAppearance: (mode: AppearanceMode) => ipcRenderer.invoke('settings:setAppearance', mode),
     chooseDataDirectory: () => ipcRenderer.invoke('settings:chooseDataDirectory'),
     dirHasDatabase: (dir: string) => ipcRenderer.invoke('settings:dirHasDatabase', dir),
-    setDataLocation: (dir: string) => ipcRenderer.invoke('settings:setDataLocation', dir)
+    setDataLocation: (dir: string) => ipcRenderer.invoke('settings:setDataLocation', dir),
+    onAppearanceChanged: (callback: (mode: AppearanceMode) => void) => {
+      const listener = (_: unknown, mode: AppearanceMode): void => callback(mode)
+      ipcRenderer.on('appearance:updated', listener)
+      return () => {
+        ipcRenderer.removeListener('appearance:updated', listener)
+      }
+    }
   }
 }
 

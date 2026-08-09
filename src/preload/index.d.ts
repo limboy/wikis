@@ -18,6 +18,7 @@ export interface SettingsAPI {
   chooseDataDirectory: () => Promise<string | null>
   dirHasDatabase: (dir: string) => Promise<boolean>
   setDataLocation: (dir: string) => Promise<SetDataLocationResult>
+  onAppearanceChanged: (callback: (mode: AppearanceMode) => void) => () => void
 }
 
 declare global {

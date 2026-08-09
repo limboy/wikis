@@ -9,6 +9,12 @@ import './app.css'
 // main process is local, and it's not worth blocking the render tree on it.
 void window.api.settings.get().then((settings) => applyAppearance(settings.appearance))
 
+// Changing the appearance setting in one window (typically the Settings
+// window) should update every other open window immediately, not just the
+// one the change was made in — otherwise e.g. the main window stays on the
+// old theme until it's reloaded or the app is restarted.
+window.api.settings.onAppearanceChanged((mode) => applyAppearance(mode))
+
 // The main window and the settings window share this same bundle. The main
 // process picks which one to show by setting the URL hash before load (see
 // createSettingsWindow in main/index.ts), since there's no other signal to
