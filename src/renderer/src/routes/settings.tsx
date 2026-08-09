@@ -159,10 +159,13 @@ function SettingsPage(): JSX.Element {
         </SettingsSection>
 
         <SettingsSection title="数据存储位置">
-          <SettingsRow
-            label="当前位置"
-            description={successMessage ?? settings?.dataDir ?? '加载中…'}
-          >
+          <div className="flex flex-col gap-3 px-4 py-3">
+            <div className="min-w-0">
+              <p className="text-sm">当前位置</p>
+              <p className="truncate text-xs text-muted-foreground" title={settings?.dataDir}>
+                {successMessage ?? settings?.dataDir ?? '加载中…'}
+              </p>
+            </div>
             {!pendingDir && (
               <div className="flex shrink-0 items-center gap-2">
                 <Button variant="outline" size="sm" onClick={() => void handleChooseDirectory()}>
@@ -176,7 +179,7 @@ function SettingsPage(): JSX.Element {
                 )}
               </div>
             )}
-          </SettingsRow>
+          </div>
 
           {pendingDir && (
             <div className="flex flex-col gap-3 px-4 py-3">
