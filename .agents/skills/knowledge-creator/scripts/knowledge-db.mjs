@@ -126,6 +126,10 @@ function initializeDatabase(dbPath) {
       PRIMARY KEY (source_id, target_id, type),
       FOREIGN KEY (source_id) REFERENCES entries(id) ON DELETE CASCADE
     );
+
+    CREATE INDEX IF NOT EXISTS idx_related_links_target ON related_links(target_id);
+    CREATE INDEX IF NOT EXISTS idx_tags_tag ON tags(tag);
+    CREATE INDEX IF NOT EXISTS idx_entries_createdAt ON entries(createdAt DESC);
   `)
   return database
 }

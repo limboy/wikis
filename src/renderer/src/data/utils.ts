@@ -1,5 +1,5 @@
 import { KnowledgeEntry, KnowledgeEntryWithBacklinks, BackLink, Source } from './types'
-import { knowledgeEntries, fetchKnowledgeEntries } from './knowledge-base'
+import { fetchKnowledgeEntries } from './knowledge-base'
 
 // Build backlinks map from the knowledge entries
 export function buildBacklinks(entries: KnowledgeEntry[]): Map<string, BackLink[]> {
@@ -29,53 +29,29 @@ export function attachBacklinksToEntries(entries: KnowledgeEntry[]): KnowledgeEn
   }))
 }
 
-// Get all entries with computed backlinks asynchronously
+// Get all entries with computed backlinks
 export async function getEntriesWithBacklinksAsync(): Promise<KnowledgeEntryWithBacklinks[]> {
   const entries = await fetchKnowledgeEntries()
   return attachBacklinksToEntries(entries)
 }
 
-// Get all entries with computed backlinks (synchronous fallback)
-export function getEntriesWithBacklinks(): KnowledgeEntryWithBacklinks[] {
-  const backlinksMap = buildBacklinks(knowledgeEntries)
-  return knowledgeEntries.map((entry) => ({
-    ...entry,
-    backlinks: backlinksMap.get(entry.id) || []
-  }))
-}
-
-// Get a single entry by ID with backlinks
+// Get a single entry by ID
 export function getEntryById(
   id: string,
-  allEntries?: KnowledgeEntryWithBacklinks[]
+  allEntries: KnowledgeEntryWithBacklinks[]
 ): KnowledgeEntryWithBacklinks | undefined {
-  const entries = allEntries || getEntriesWithBacklinks()
-  return entries.find((e) => e.id === id)
-}
-
-// Get entries sharing the same source
-export function getEntriesBySameSource(
-  currentEntry: KnowledgeEntry,
-  allEntries?: KnowledgeEntryWithBacklinks[]
-): KnowledgeEntryWithBacklinks[] {
-  if (!currentEntry.source?.title) return []
-  const all = allEntries || getEntriesWithBacklinks()
-  return all.filter(
-    (e) => e.id !== currentEntry.id && e.source?.title === currentEntry.source?.title
-  )
+  return allEntries.find((e) => e.id === id)
 }
 
 // Get source metadata and entries belonging to that source by title
 export function getSourceDataByTitle(
   title: string,
-  allEntries?: KnowledgeEntryWithBacklinks[]
+  allEntries: KnowledgeEntryWithBacklinks[]
 ): { source: Source; entries: KnowledgeEntryWithBacklinks[] } | undefined {
-  const all = allEntries || getEntriesWithBacklinks()
-  const matchingEntries = all.filter((e) => e.source?.title === title)
+  const matchingEntries = allEntries.filter((e) => e.source?.title === title)
   if (matchingEntries.length === 0) return undefined
-  const source = matchingEntries[0].source!
   return {
-    source,
+    source: matchingEntries[0].source!,
     entries: matchingEntries
   }
 }

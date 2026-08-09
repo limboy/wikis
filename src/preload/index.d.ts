@@ -1,5 +1,5 @@
 import { ElectronAPI } from '@electron-toolkit/preload'
-import { KnowledgeEntry } from '../renderer/src/data/types'
+import { KnowledgeEntry } from '../shared/types'
 
 export interface DbAPI {
   getAllEntries: () => Promise<KnowledgeEntry[]>

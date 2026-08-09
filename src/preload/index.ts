@@ -1,6 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
-import type { KnowledgeEntry } from '../renderer/src/data/types'
+import type { KnowledgeEntry } from '../shared/types'
 import type { DbAPI } from './index.d'
 
 // Custom DB APIs for renderer

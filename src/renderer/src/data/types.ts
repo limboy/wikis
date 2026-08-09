@@ -1,42 +1,17 @@
-export type KnowledgeType = 'concept' | 'viewpoint' | 'narrative' | 'reflection'
+export type {
+  KnowledgeEntry,
+  KnowledgeType,
+  RelatedLink,
+  RelationType,
+  Source,
+  SourceType
+} from '../../../shared/types'
 
-export type RelationType = 'derived_from' | 'requires' | 'related_to' | 'contrasts_with' | 'part_of'
-
-export interface RelatedLink {
-  targetId: string
-  type: RelationType
-}
+import type { KnowledgeEntry, KnowledgeType, RelationType } from '../../../shared/types'
 
 export interface BackLink {
   sourceId: string
   type: RelationType
-}
-
-export interface Source {
-  type: 'book' | 'article' | 'video' | 'podcast' | 'conversation' | 'personal'
-  title: string
-  author?: string
-  url?: string
-}
-
-export interface KnowledgeEntry {
-  id: string
-  title: string
-  type: KnowledgeType
-
-  // Standard Sections
-  oneLiner: string // 一句话解释
-  content?: string // 详细内容 / 正文
-
-  // Metadata
-  source?: Source
-
-  // Bi-directional Links
-  related: RelatedLink[]
-
-  tags: string[]
-  createdAt: string // ISO date
-  updatedAt: string
 }
 
 // Computed at runtime

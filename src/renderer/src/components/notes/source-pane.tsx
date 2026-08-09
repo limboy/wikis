@@ -1,4 +1,4 @@
-import { useRef, type JSX } from 'react'
+import { type JSX } from 'react'
 import { X, ExternalLink } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import {
@@ -33,13 +33,8 @@ export function SourcePane({
   onOpenNote,
   onClose
 }: SourcePaneProps): JSX.Element {
-  const paneRef = useRef<HTMLDivElement>(null)
-
   return (
-    <div
-      ref={paneRef}
-      className="flex-shrink-0 w-[600px] h-full flex flex-col bg-card text-card-foreground border-r border-border animate-in slide-in-from-right-4 fade-in duration-200"
-    >
+    <div className="flex-shrink-0 w-[600px] h-full flex flex-col bg-card text-card-foreground border-r border-border animate-in slide-in-from-right-4 fade-in duration-200">
       <div className="flex-1 flex flex-col h-full overflow-y-auto">
         <div className="p-6 flex flex-col gap-6">
           {/* Header */}

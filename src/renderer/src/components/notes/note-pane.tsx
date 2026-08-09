@@ -1,4 +1,4 @@
-import { useRef, type JSX } from 'react'
+import { type JSX } from 'react'
 import { X, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { KnowledgeEntryWithBacklinks, KnowledgeType, KNOWLEDGE_TYPE_LABELS } from '@/data/types'
@@ -8,7 +8,7 @@ import { MarkdownRenderer } from '@/components/ui/markdown-renderer'
 
 interface NotePaneProps {
   entry: KnowledgeEntryWithBacklinks
-  allEntries?: KnowledgeEntryWithBacklinks[]
+  allEntries: KnowledgeEntryWithBacklinks[]
   paneIndex: number
   totalPanes: number
   onOpenNote: (noteId: string, fromIndex: number) => void
@@ -30,8 +30,6 @@ export function NotePane({
   onOpenNote,
   onClose
 }: NotePaneProps): JSX.Element {
-  const paneRef = useRef<HTMLDivElement>(null)
-
   const relatedIds = Array.from(new Set(entry.related?.map((l) => l.targetId) || []))
   const backlinkIds = Array.from(new Set(entry.backlinks?.map((l) => l.sourceId) || []))
 
@@ -41,10 +39,7 @@ export function NotePane({
   const hasBottomSection = hasSource || hasRelated || hasBacklinks
 
   return (
-    <div
-      ref={paneRef}
-      className="flex-shrink-0 w-[600px] h-full flex flex-col bg-card text-card-foreground border-r border-border animate-in slide-in-from-right-4 fade-in duration-200"
-    >
+    <div className="flex-shrink-0 w-[600px] h-full flex flex-col bg-card text-card-foreground border-r border-border animate-in slide-in-from-right-4 fade-in duration-200">
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col h-full overflow-y-auto">
         <div className="p-6 flex flex-col gap-5">
@@ -157,7 +152,7 @@ function RelatedCard({
   onClick
 }: {
   noteId: string
-  allEntries?: KnowledgeEntryWithBacklinks[]
+  allEntries: KnowledgeEntryWithBacklinks[]
   onClick: () => void
 }): JSX.Element {
   const targetEntry = getEntryById(noteId, allEntries)

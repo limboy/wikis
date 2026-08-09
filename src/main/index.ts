@@ -1,12 +1,10 @@
 import { app, shell, BrowserWindow, ipcMain } from 'electron'
-import { join, dirname } from 'path'
+import { join } from 'path'
 import { pathToFileURL } from 'url'
-import { watch, existsSync } from 'fs'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import {
   initDatabase,
-  getDatabasePath,
   seedInitialEntriesIfEmpty,
   getAllEntries,
   getEntryById,
@@ -18,38 +16,16 @@ import { validateEntry, validateId } from './validation'
 import { isRendererUrl, isSafeExternalUrl } from './navigation'
 import { initialKnowledgeEntries } from './initial-data'
 
-let watchDebounceTimer: NodeJS.Timeout | null = null
-
-function broadcastDbUpdated(): void {
+/**
+ * Tells open windows to refetch after this process writes to the database.
+ * Writes made by an external tool (the knowledge-creator CLI) are picked up by
+ * the renderer's window-focus refetch instead.
+ */
+function notifyDbUpdated(): void {
   for (const window of BrowserWindow.getAllWindows()) {
     if (!window.isDestroyed()) {
       window.webContents.send('db:updated')
     }
-  }
-}
-
-function notifyDbUpdated(): void {
-  if (watchDebounceTimer) {
-    clearTimeout(watchDebounceTimer)
-  }
-  watchDebounceTimer = setTimeout(() => {
-    watchDebounceTimer = null
-    broadcastDbUpdated()
-  }, 300)
-}
-
-function setupDatabaseWatcher(dbPath: string): void {
-  const dir = dirname(dbPath)
-  if (!existsSync(dir)) return
-
-  try {
-    watch(dir, (_, filename) => {
-      if (filename && (filename.startsWith('wikis.db') || filename.includes('wikis.db'))) {
-        notifyDbUpdated()
-      }
-    })
-  } catch (err) {
-    console.error('[SQLite] Failed to set up file watcher:', err)
   }
 }
 
@@ -135,11 +111,9 @@ app.whenReady().then(() => {
   electronApp.setAppUserModelId('com.wikis')
 
   // Initialize SQLite database and seed initial entries
-  const dbPath = getDatabasePath()
   initDatabase()
   seedInitialEntriesIfEmpty(initialKnowledgeEntries)
   setupIpcHandlers()
-  setupDatabaseWatcher(dbPath)
 
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)

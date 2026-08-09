@@ -5,7 +5,7 @@ import { NotePane } from './note-pane'
 import { SourcePane } from './source-pane'
 
 interface StackedNotesContainerProps {
-  entries?: KnowledgeEntryWithBacklinks[]
+  entries: KnowledgeEntryWithBacklinks[]
   stackedNoteIds: string[]
   onOpenNote: (noteId: string, fromIndex: number) => void
   onCloseNote: (index: number) => void
