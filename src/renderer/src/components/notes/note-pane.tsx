@@ -31,6 +31,12 @@ export function NotePane({
   const relatedIds = Array.from(new Set(entry.related?.map((l) => l.targetId) || []))
   const backlinkIds = Array.from(new Set(entry.backlinks?.map((l) => l.sourceId) || []))
 
+  // The one-liner leads the body as its own section so it picks up the same
+  // heading and prose styling as the rest of the note.
+  const body = [entry.oneLiner ? `## 一句话解释\n\n${entry.oneLiner}` : '', entry.content || '']
+    .filter(Boolean)
+    .join('\n\n')
+
   const hasSource = Boolean(entry.source)
   const hasRelated = relatedIds.length > 0
   const hasBacklinks = backlinkIds.length > 0
@@ -59,15 +65,10 @@ export function NotePane({
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col overflow-y-auto">
         <div className="p-4 flex flex-col gap-4">
-          {/* One-liner */}
-          <p className="text-[15px] leading-relaxed">
-            {entry.oneLiner}
-          </p>
-
           {/* Main Content */}
-          {entry.content && (
+          {body && (
             <div className="text-base leading-relaxed">
-              <MarkdownRenderer content={entry.content} />
+              <MarkdownRenderer content={body} />
             </div>
           )}
 

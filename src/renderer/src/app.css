@@ -156,6 +156,11 @@
 }
 
 /* Markdown Content Styling */
+
+.markdown-body :first-child {
+  margin-top: 0;
+}
+
 .markdown-body h1 {
   font-size: 1.375rem;
   font-weight: 700;
