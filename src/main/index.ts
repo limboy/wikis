@@ -1,5 +1,6 @@
 import { app, shell, BrowserWindow, ipcMain, Menu, nativeTheme } from 'electron'
 import { join } from 'path'
+import { homedir } from 'os'
 import { pathToFileURL } from 'url'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
@@ -25,6 +26,28 @@ import {
   setDataLocation
 } from './settings'
 import type { AppearanceMode } from '../shared/types'
+
+// Electron has no built-in 'cache' path key, so resolve each platform's
+// conventional cache root by hand.
+function resolveCacheRoot(): string {
+  switch (process.platform) {
+    case 'darwin':
+      return join(homedir(), 'Library', 'Caches')
+    case 'win32':
+      return process.env.LOCALAPPDATA || join(app.getPath('appData'), '..', 'Local')
+    default:
+      return process.env.XDG_CACHE_HOME || join(homedir(), '.cache')
+  }
+}
+
+// Electron defaults Chromium's own cache/session files (Cache, Code Cache,
+// GPUCache, Cookies, etc.) into the same directory as `userData`. That
+// directory (~/Library/Application Support/wikis on macOS) is meant to hold
+// only what's worth backing up — our SQLite db and settings.json — so point
+// the disposable Chromium data at the OS cache directory instead. Must run
+// before app.whenReady() / any window creation, while it's still safe to
+// change.
+app.setPath('sessionData', join(resolveCacheRoot(), app.getName()))
 
 /**
  * Tells open windows to refetch after this process writes to the database.
