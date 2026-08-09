@@ -147,7 +147,7 @@ export function KnowledgeSidebar({
                   className={cn(
                     'flex flex-col gap-1 px-4 py-3 border-b border-border/40 text-left transition-colors cursor-pointer',
                     'hover:bg-accent/50',
-                    isActive && 'bg-accent border-l-2 border-l-primary'
+                    isActive && 'bg-accent'
                   )}
                 >
                   <div className="font-medium text-sm line-clamp-1">{entry.title}</div>
