@@ -64,9 +64,9 @@ export function NotePane({
           </div>
 
           {/* One-liner */}
-          <div className="text-[15px] font-medium text-foreground/80 border-l-[3px] border-primary/60 pl-4 py-0.5 leading-relaxed">
+          <p className="text-[15px] leading-relaxed">
             {entry.oneLiner}
-          </div>
+          </p>
 
           {/* Main Content */}
           {entry.content && (
