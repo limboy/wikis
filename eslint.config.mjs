@@ -37,5 +37,16 @@ export default defineConfig(
       'react-refresh/only-export-components': 'off'
     }
   },
+  {
+    // TanStack Router's file-based routing exports a `Route` config object
+    // that references a page component defined in the same file. The rule
+    // has no option that models that shape: exempting `Route` by name still
+    // leaves it flagging the page component itself, since it never counts
+    // the file as having a component export either way.
+    files: ['src/renderer/src/routes/**'],
+    rules: {
+      'react-refresh/only-export-components': 'off'
+    }
+  },
   eslintConfigPrettier
 )
