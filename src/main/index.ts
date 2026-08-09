@@ -122,13 +122,12 @@ function setupSettingsIpcHandlers(): void {
     }
     const result = setDataLocation(dir, closeDatabase)
 
-    // The renderer needs to see this response before the process tears down,
-    // so the restart is deferred rather than fired synchronously here.
+    // No relaunch needed: closeDatabase() drops the connection, and the next
+    // db:* call lazily reopens one at the new path (see initDatabase in
+    // db.ts). Just tell open windows to refetch so they pick up whatever's
+    // there.
     if (result.ok) {
-      setTimeout(() => {
-        app.relaunch()
-        app.exit(0)
-      }, 300)
+      notifyDbUpdated()
     }
 
     return result

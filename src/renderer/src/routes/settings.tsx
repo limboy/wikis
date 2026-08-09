@@ -60,12 +60,18 @@ function SettingsPage(): JSX.Element {
   const [pendingDir, setPendingDir] = useState<string | null>(null)
   const [pendingHasExistingDb, setPendingHasExistingDb] = useState<boolean | null>(null)
   const [busy, setBusy] = useState(false)
-  const [restarting, setRestarting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
   useEffect(() => {
     void window.api.settings.get().then(setSettings)
   }, [])
+
+  useEffect(() => {
+    if (!successMessage) return
+    const timer = setTimeout(() => setSuccessMessage(null), 3000)
+    return () => clearTimeout(timer)
+  }, [successMessage])
 
   const handleAppearanceChange = useCallback((mode: AppearanceMode) => {
     applyAppearance(mode)
@@ -77,6 +83,7 @@ function SettingsPage(): JSX.Element {
 
   const handleChooseDirectory = useCallback(async () => {
     setError(null)
+    setSuccessMessage(null)
     const dir = await window.api.settings.chooseDataDirectory()
     if (dir && dir !== settings?.dataDir) {
       setPendingDir(dir)
@@ -87,6 +94,7 @@ function SettingsPage(): JSX.Element {
   const handleResetToDefault = useCallback(async () => {
     if (!settings) return
     setError(null)
+    setSuccessMessage(null)
     setPendingDir(settings.defaultDataDir)
     setPendingHasExistingDb(await window.api.settings.dirHasDatabase(settings.defaultDataDir))
   }, [settings])
@@ -104,25 +112,19 @@ function SettingsPage(): JSX.Element {
     try {
       const result = await window.api.settings.setDataLocation(pendingDir)
       if (result.ok) {
-        setRestarting(true)
+        setSettings(await window.api.settings.get())
+        setPendingDir(null)
+        setPendingHasExistingDb(null)
+        setSuccessMessage('已切换到新位置')
       } else {
         setError(result.error)
-        setBusy(false)
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err))
+    } finally {
       setBusy(false)
     }
   }, [pendingDir])
-
-  if (restarting) {
-    return (
-      <div className="flex h-screen w-screen flex-col items-center justify-center gap-3 bg-background text-center">
-        <Loader2 className="size-6 animate-spin text-muted-foreground" />
-        <p className="text-sm text-muted-foreground">正在应用更改，Wikis 即将重启…</p>
-      </div>
-    )
-  }
 
   return (
     <div
@@ -157,7 +159,10 @@ function SettingsPage(): JSX.Element {
         </SettingsSection>
 
         <SettingsSection title="数据存储位置">
-          <SettingsRow label="当前位置" description={settings?.dataDir ?? '加载中…'}>
+          <SettingsRow
+            label="当前位置"
+            description={successMessage ?? settings?.dataDir ?? '加载中…'}
+          >
             {!pendingDir && (
               <div className="flex shrink-0 items-center gap-2">
                 <Button variant="outline" size="sm" onClick={() => void handleChooseDirectory()}>
@@ -197,16 +202,13 @@ function SettingsPage(): JSX.Element {
                   取消
                 </Button>
                 <Button size="sm" onClick={() => void handleConfirmDataLocation()} disabled={busy}>
-                  {busy ? '处理中…' : '确认并重启'}
+                  {busy && <Loader2 className="size-3.5 animate-spin" />}
+                  {busy ? '切换中…' : '确认'}
                 </Button>
               </div>
             </div>
           )}
         </SettingsSection>
-
-        <p className="px-1 text-xs text-muted-foreground">
-          更改存储位置后，Wikis 会自动重启以生效。
-        </p>
       </div>
     </div>
   )
