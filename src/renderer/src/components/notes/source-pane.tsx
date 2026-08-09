@@ -13,7 +13,6 @@ interface SourcePaneProps {
   source: Source
   entries: KnowledgeEntryWithBacklinks[]
   paneIndex: number
-  totalPanes: number
   onOpenNote: (noteId: string, fromIndex: number) => void
   onClose: (index: number) => void
 }
@@ -29,28 +28,34 @@ export function SourcePane({
   source,
   entries,
   paneIndex,
-  totalPanes,
   onOpenNote,
   onClose
 }: SourcePaneProps): JSX.Element {
   return (
-    <div className="flex-shrink-0 w-[600px] h-full flex flex-col bg-card text-card-foreground border-r border-border animate-in slide-in-from-right-4 fade-in duration-200">
-      <div className="flex-1 flex flex-col h-full overflow-y-auto">
-        <div className="p-6 flex flex-col gap-6">
-          {/* Header */}
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex flex-col gap-1.5">
-              <h1 className="text-xl font-bold leading-tight">{source.title}</h1>
-              {source.author && (
-                <span className="text-sm text-muted-foreground font-medium">{source.author}</span>
-              )}
-            </div>
-            {totalPanes > 1 && (
-              <Button variant="ghost" size="icon-sm" onClick={() => onClose(paneIndex)}>
-                <X />
-              </Button>
-            )}
-          </div>
+    <div
+      className="flex-shrink-0 w-[600px] h-full flex flex-col bg-card text-card-foreground border-r border-border animate-in slide-in-from-right-4 fade-in duration-200"
+      style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
+    >
+      {/* Draggable title bar */}
+      <div
+        className="h-[44px] flex-shrink-0 flex items-center justify-between gap-3 px-4 border-b border-border"
+        style={{ WebkitAppRegion: 'drag' } as React.CSSProperties}
+      >
+        <h1 className="text-xl font-bold leading-tight truncate">{source.title}</h1>
+        <div
+          className="flex-shrink-0"
+          style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
+        >
+          <Button variant="ghost" size="icon-sm" onClick={() => onClose(paneIndex)}>
+            <X />
+          </Button>
+        </div>
+      </div>
+      <div className="flex-1 flex flex-col overflow-y-auto">
+        <div className="p-4 flex flex-col gap-4">
+          {source.author && (
+            <span className="text-sm text-muted-foreground font-medium">{source.author}</span>
+          )}
 
           {source.url && (
             <div>

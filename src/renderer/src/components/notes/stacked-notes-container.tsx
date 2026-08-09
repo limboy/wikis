@@ -51,7 +51,6 @@ export function StackedNotesContainer({
               source={sourceData.source}
               entries={sourceData.entries}
               paneIndex={index}
-              totalPanes={stackedNoteIds.length}
               onOpenNote={onOpenNote}
               onClose={onCloseNote}
             />
@@ -67,7 +66,6 @@ export function StackedNotesContainer({
             entry={entry}
             allEntries={entries}
             paneIndex={index}
-            totalPanes={stackedNoteIds.length}
             onOpenNote={onOpenNote}
             onClose={onCloseNote}
           />

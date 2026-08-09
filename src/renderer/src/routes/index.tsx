@@ -76,13 +76,21 @@ function IndexPage(): JSX.Element {
         sortMode={sortMode}
         onSortModeChange={handleSortModeChange}
       />
-      <StackedNotesContainer
-        entries={orderedEntries}
-        stackedNoteIds={stackedNoteIds}
-        onOpenNote={openNote}
-        onCloseNote={closeNote}
-        containerRef={containerRef}
-      />
+      <div className="relative flex flex-1 min-w-0">
+        {/* Keeps the area the panes don't cover draggable. The separator line is
+            drawn by each pane's own title bar, so this strip stays borderless. */}
+        <div
+          className="absolute inset-x-0 top-0 h-[44px] -z-10"
+          style={{ WebkitAppRegion: 'drag' } as React.CSSProperties}
+        />
+        <StackedNotesContainer
+          entries={orderedEntries}
+          stackedNoteIds={stackedNoteIds}
+          onOpenNote={openNote}
+          onCloseNote={closeNote}
+          containerRef={containerRef}
+        />
+      </div>
     </div>
   )
 }

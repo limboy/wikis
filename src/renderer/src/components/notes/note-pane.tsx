@@ -10,7 +10,6 @@ interface NotePaneProps {
   entry: KnowledgeEntryWithBacklinks
   allEntries: KnowledgeEntryWithBacklinks[]
   paneIndex: number
-  totalPanes: number
   onOpenNote: (noteId: string, fromIndex: number) => void
   onClose: (index: number) => void
 }
@@ -26,7 +25,6 @@ export function NotePane({
   entry,
   allEntries,
   paneIndex,
-  totalPanes,
   onOpenNote,
   onClose
 }: NotePaneProps): JSX.Element {
@@ -39,30 +37,28 @@ export function NotePane({
   const hasBottomSection = hasSource || hasRelated || hasBacklinks
 
   return (
-    <div className="flex-shrink-0 w-[600px] h-full flex flex-col bg-card text-card-foreground border-r border-border animate-in slide-in-from-right-4 fade-in duration-200">
+    <div
+      className="flex-shrink-0 w-[600px] h-full flex flex-col bg-card text-card-foreground border-r border-border animate-in slide-in-from-right-4 fade-in duration-200"
+      style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
+    >
+      {/* Draggable title bar */}
+      <div
+        className="h-[44px] flex-shrink-0 flex items-center justify-between gap-3 px-4 border-b border-border"
+        style={{ WebkitAppRegion: 'drag' } as React.CSSProperties}
+      >
+        <h1 className="text-lg font-semibold leading-tight truncate">{entry.title}</h1>
+        <div
+          className="flex-shrink-0"
+          style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
+        >
+          <Button variant="ghost" size="icon-sm" onClick={() => onClose(paneIndex)}>
+            <X />
+          </Button>
+        </div>
+      </div>
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col h-full overflow-y-auto">
-        <div className="p-6 flex flex-col gap-5">
-          {/* Header */}
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex flex-col gap-2">
-              <h1 className="text-xl font-bold leading-tight">{entry.title}</h1>
-              <span
-                className={cn(
-                  'self-start px-2 py-0.5 rounded text-xs font-medium',
-                  typeColorClasses[entry.type]
-                )}
-              >
-                {KNOWLEDGE_TYPE_LABELS[entry.type]}
-              </span>
-            </div>
-            {totalPanes > 1 && (
-              <Button variant="ghost" size="icon-sm" onClick={() => onClose(paneIndex)}>
-                <X />
-              </Button>
-            )}
-          </div>
-
+      <div className="flex-1 flex flex-col overflow-y-auto">
+        <div className="p-4 flex flex-col gap-4">
           {/* One-liner */}
           <p className="text-[15px] leading-relaxed">
             {entry.oneLiner}
