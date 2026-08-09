@@ -41,8 +41,8 @@ const api: { db: DbAPI; settings: SettingsAPI } = {
     get: () => ipcRenderer.invoke('settings:get'),
     setAppearance: (mode: AppearanceMode) => ipcRenderer.invoke('settings:setAppearance', mode),
     chooseDataDirectory: () => ipcRenderer.invoke('settings:chooseDataDirectory'),
-    setDataLocation: (options: { dir: string; moveExisting: boolean }) =>
-      ipcRenderer.invoke('settings:setDataLocation', options)
+    dirHasDatabase: (dir: string) => ipcRenderer.invoke('settings:dirHasDatabase', dir),
+    setDataLocation: (dir: string) => ipcRenderer.invoke('settings:setDataLocation', dir)
   }
 }
 

@@ -109,25 +109,27 @@ export async function chooseDataDirectory(): Promise<string | null> {
   return result.filePaths[0]
 }
 
-interface SetDataLocationOptions {
-  dir: string
-  moveExisting: boolean
-}
-
 type SetDataLocationResult = { ok: true } | { ok: false; error: string }
 
+/** Whether `dir` already holds a wikis database (checked before switching to it). */
+export function dirHasDatabase(dir: string): boolean {
+  try {
+    return existsSync(join(resolve(dir), 'wikis.db'))
+  } catch {
+    return false
+  }
+}
+
 /**
- * Repoints the configured data directory at `dir`, optionally carrying the
- * existing SQLite files over. `closeDb` is injected rather than imported to
- * avoid a settings <-> db import cycle; the caller (main/index.ts) is
- * expected to restart the app on success so a fresh connection opens at the
- * new path.
+ * Repoints the configured data directory at `dir`. If a database already
+ * exists there, it's adopted as-is and the current one is left untouched;
+ * otherwise the current SQLite files are moved over so the new location
+ * isn't left empty. `closeDb` is injected rather than imported to avoid a
+ * settings <-> db import cycle; the caller (main/index.ts) is expected to
+ * restart the app on success so a fresh connection opens at the new path.
  */
-export function setDataLocation(
-  options: SetDataLocationOptions,
-  closeDb: () => void
-): SetDataLocationResult {
-  const targetDir = resolve(options.dir)
+export function setDataLocation(dir: string, closeDb: () => void): SetDataLocationResult {
+  const targetDir = resolve(dir)
   const currentDir = resolve(getConfiguredDataDir())
 
   if (targetDir === currentDir) {
@@ -146,17 +148,13 @@ export function setDataLocation(
     writeFileSync(probe, '')
     unlinkSync(probe)
 
-    if (options.moveExisting) {
-      const conflict = DB_FILE_NAMES.some((name) => existsSync(join(targetDir, name)))
-      if (conflict) {
-        return {
-          ok: false,
-          error: '目标目录中已存在数据库文件，请选择空文件夹，或取消勾选"移动现有数据"'
-        }
-      }
+    const targetHasDb = dirHasDatabase(targetDir)
 
-      closeDb()
+    closeDb()
 
+    if (!targetHasDb) {
+      // No database at the target yet — bring the current one along instead
+      // of leaving the new location empty.
       for (const name of DB_FILE_NAMES) {
         const from = join(currentDir, name)
         if (!existsSync(from)) continue
@@ -173,9 +171,9 @@ export function setDataLocation(
           }
         }
       }
-    } else {
-      closeDb()
     }
+    // else: the target already has a database — adopt it as-is and leave
+    // the current one where it is.
 
     writePersisted({
       ...readPersisted(),

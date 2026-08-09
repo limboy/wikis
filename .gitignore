@@ -21,3 +21,6 @@ out
 *.vtt
 tmp/
 
+# TypeScript incremental build cache
+*.tsbuildinfo
+

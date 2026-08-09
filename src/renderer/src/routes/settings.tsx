@@ -58,7 +58,7 @@ function SettingsRow({
 function SettingsPage(): JSX.Element {
   const [settings, setSettings] = useState<AppSettings | null>(null)
   const [pendingDir, setPendingDir] = useState<string | null>(null)
-  const [moveExisting, setMoveExisting] = useState(true)
+  const [pendingHasExistingDb, setPendingHasExistingDb] = useState<boolean | null>(null)
   const [busy, setBusy] = useState(false)
   const [restarting, setRestarting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -80,19 +80,20 @@ function SettingsPage(): JSX.Element {
     const dir = await window.api.settings.chooseDataDirectory()
     if (dir && dir !== settings?.dataDir) {
       setPendingDir(dir)
-      setMoveExisting(true)
+      setPendingHasExistingDb(await window.api.settings.dirHasDatabase(dir))
     }
   }, [settings?.dataDir])
 
-  const handleResetToDefault = useCallback(() => {
+  const handleResetToDefault = useCallback(async () => {
     if (!settings) return
     setError(null)
     setPendingDir(settings.defaultDataDir)
-    setMoveExisting(true)
+    setPendingHasExistingDb(await window.api.settings.dirHasDatabase(settings.defaultDataDir))
   }, [settings])
 
   const handleCancelPending = useCallback(() => {
     setPendingDir(null)
+    setPendingHasExistingDb(null)
     setError(null)
   }, [])
 
@@ -101,7 +102,7 @@ function SettingsPage(): JSX.Element {
     setBusy(true)
     setError(null)
     try {
-      const result = await window.api.settings.setDataLocation({ dir: pendingDir, moveExisting })
+      const result = await window.api.settings.setDataLocation(pendingDir)
       if (result.ok) {
         setRestarting(true)
       } else {
@@ -112,7 +113,7 @@ function SettingsPage(): JSX.Element {
       setError(err instanceof Error ? err.message : String(err))
       setBusy(false)
     }
-  }, [pendingDir, moveExisting])
+  }, [pendingDir])
 
   if (restarting) {
     return (
@@ -164,7 +165,7 @@ function SettingsPage(): JSX.Element {
                   更改…
                 </Button>
                 {settings && !settings.isDefaultDataDir && (
-                  <Button variant="ghost" size="sm" onClick={handleResetToDefault}>
+                  <Button variant="ghost" size="sm" onClick={() => void handleResetToDefault()}>
                     恢复默认
                   </Button>
                 )}
@@ -181,21 +182,13 @@ function SettingsPage(): JSX.Element {
                 </p>
               </div>
 
-              <label className="flex items-start gap-2 text-sm">
-                <input
-                  type="checkbox"
-                  className="mt-0.5"
-                  checked={moveExisting}
-                  onChange={(event) => setMoveExisting(event.target.checked)}
-                  disabled={busy}
-                />
-                <span>
-                  移动现有数据到新位置
-                  <span className="block text-xs text-muted-foreground">
-                    不勾选则会在新位置创建一个空的知识库，原有数据仍保留在原处
-                  </span>
-                </span>
-              </label>
+              <p className="text-xs text-muted-foreground">
+                {pendingHasExistingDb === null
+                  ? '检测中…'
+                  : pendingHasExistingDb
+                    ? '该目录中已有一个知识库，切换后将直接使用它，当前数据保留在原处'
+                    : '该目录中还没有知识库，当前数据将移动到这里'}
+              </p>
 
               {error && <p className="text-xs text-destructive">{error}</p>}
 

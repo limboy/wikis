@@ -23,6 +23,7 @@ import {
   applyAppearance,
   setAppearance,
   chooseDataDirectory,
+  dirHasDatabase,
   setDataLocation
 } from './settings'
 import type { AppearanceMode } from '../shared/types'
@@ -110,16 +111,16 @@ function setupSettingsIpcHandlers(): void {
 
   ipcMain.handle('settings:chooseDataDirectory', () => chooseDataDirectory())
 
-  ipcMain.handle('settings:setDataLocation', (_, payload: unknown) => {
-    if (
-      typeof payload !== 'object' ||
-      payload === null ||
-      typeof (payload as { dir?: unknown }).dir !== 'string'
-    ) {
+  ipcMain.handle('settings:dirHasDatabase', (_, dir: unknown) => {
+    if (typeof dir !== 'string' || !dir.trim()) return false
+    return dirHasDatabase(dir)
+  })
+
+  ipcMain.handle('settings:setDataLocation', (_, dir: unknown) => {
+    if (typeof dir !== 'string' || !dir.trim()) {
       throw new Error('Invalid data location payload')
     }
-    const { dir, moveExisting } = payload as { dir: string; moveExisting?: boolean }
-    const result = setDataLocation({ dir, moveExisting: moveExisting !== false }, closeDatabase)
+    const result = setDataLocation(dir, closeDatabase)
 
     // The renderer needs to see this response before the process tears down,
     // so the restart is deferred rather than fired synchronously here.
