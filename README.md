@@ -10,7 +10,7 @@ A modern personal knowledge base desktop application for macOS built with Electr
 - **Source & Tag Tracking**: Attribute entries to books, articles, videos, podcasts, conversations, or personal thoughts with tag filtering.
 - **Markdown & GFM Support**: Full Markdown rendering with CJK formatting, task lists, and table formatting.
 - **Local-First & Offline**: Stored in a high-performance local SQLite database (`better-sqlite3`) with WAL mode.
-- **AI Agent Skill**: Built-in agent skill (`knowledge-creator`) to extract, structure, and maintain knowledge cards using AI.
+- **AI Agent Skill**: Built-in agent skill (`add-wiki`) to extract, structure, and maintain knowledge cards using AI.
 
 ## Tech Stack
 

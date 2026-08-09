@@ -52,7 +52,7 @@ app.setPath('sessionData', join(resolveCacheRoot(), app.getName()))
 
 /**
  * Tells open windows to refetch after this process writes to the database.
- * Writes made by an external tool (the knowledge-creator CLI) are picked up by
+ * Writes made by an external tool (the add-wiki CLI) are picked up by
  * the renderer's window-focus refetch instead.
  */
 function notifyDbUpdated(): void {

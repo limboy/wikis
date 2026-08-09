@@ -1,5 +1,5 @@
 ---
-name: knowledge-creator
+name: add-wiki
 description: 创建、查询、修改或删除知识点卡片，并将每次数据变更持久化到 wikis SQLite 数据库。用户要求从文本或对话提炼知识、调整已有知识点、维护标签/关联、导入条目或删除条目时使用；按概念、观点、叙事、感悟分类生成结构化字段和 Markdown 正文，并执行对应的数据库 CRUD 操作与回读验证。
 ---
 
@@ -29,22 +29,22 @@ description: 创建、查询、修改或删除知识点卡片，并将每次数�
 
 ```bash
 # 列出并了解已有条目；创建关联前先执行
-node .agents/skills/knowledge-creator/scripts/knowledge-db.mjs list
+node .agents/skills/add-wiki/scripts/knowledge-db.mjs list
 
 # 读取单条
-node .agents/skills/knowledge-creator/scripts/knowledge-db.mjs get <id>
+node .agents/skills/add-wiki/scripts/knowledge-db.mjs get <id>
 
 # 创建；ID 已存在时失败
-node .agents/skills/knowledge-creator/scripts/knowledge-db.mjs create --file <entry.json>
+node .agents/skills/add-wiki/scripts/knowledge-db.mjs create --file <entry.json>
 
 # 更新；文件可以是完整条目，也可以是只含待修改字段的 JSON 对象
-node .agents/skills/knowledge-creator/scripts/knowledge-db.mjs update <id> --file <patch.json>
+node .agents/skills/add-wiki/scripts/knowledge-db.mjs update <id> --file <patch.json>
 
 # 仅在用户明确要求“存在则更新，不存在则创建”时使用
-node .agents/skills/knowledge-creator/scripts/knowledge-db.mjs upsert --file <entry.json>
+node .agents/skills/add-wiki/scripts/knowledge-db.mjs upsert --file <entry.json>
 
 # 仅在用户明确要求删除时使用
-node .agents/skills/knowledge-creator/scripts/knowledge-db.mjs delete <id>
+node .agents/skills/add-wiki/scripts/knowledge-db.mjs delete <id>
 ```
 
 用 `--file -` 从标准输入读取 JSON。命令成功时输出 `{ "ok": true, ... }`；写操作已经在事务内完成回读验证。
