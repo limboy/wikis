@@ -70,7 +70,7 @@ export function NotePane({
 
           {/* Main Content */}
           {entry.content && (
-            <div className="text-sm text-foreground/90 leading-relaxed">
+            <div className="text-base leading-relaxed">
               <MarkdownRenderer content={entry.content} />
             </div>
           )}

@@ -29,7 +29,7 @@ export function MarkdownRenderer({ content, className }: MarkdownRendererProps):
 
   return (
     <div
-      className={cn('markdown-body text-sm text-foreground/80 leading-[1.8]', className)}
+      className={cn('markdown-body leading-[1.8]', className)}
       dangerouslySetInnerHTML={{ __html: html }}
     />
   )
