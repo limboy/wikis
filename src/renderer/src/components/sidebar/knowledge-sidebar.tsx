@@ -144,6 +144,10 @@ export function KnowledgeSidebar({
                 <button
                   key={entry.id}
                   onClick={() => onSelectEntry(entry.id)}
+                  onContextMenu={(e) => {
+                    e.preventDefault()
+                    window.api.menu.showWikiItemContextMenu(entry.id)
+                  }}
                   className={cn(
                     'flex flex-col gap-1 px-4 py-3 border-b border-border/40 text-left transition-colors cursor-pointer',
                     'hover:bg-accent/50',

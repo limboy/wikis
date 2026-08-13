@@ -21,12 +21,17 @@ export interface SettingsAPI {
   onAppearanceChanged: (callback: (mode: AppearanceMode) => void) => () => void
 }
 
+export interface MenuAPI {
+  showWikiItemContextMenu: (id: string) => void
+}
+
 declare global {
   interface Window {
     electron: ElectronAPI
     api: {
       db: DbAPI
       settings: SettingsAPI
+      menu: MenuAPI
     }
   }
 }

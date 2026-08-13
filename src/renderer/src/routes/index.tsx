@@ -11,7 +11,8 @@ export const Route = createFileRoute('/')({
 })
 
 function IndexPage(): JSX.Element {
-  const { stackedNoteIds, openNote, closeNote, selectNote, containerRef } = useStackedNotes()
+  const { stackedNoteIds, openNote, closeNote, selectNote, pruneNoteIds, containerRef } =
+    useStackedNotes()
 
   const [entries, setEntries] = useState<KnowledgeEntryWithBacklinks[]>([])
   const [sortMode, setSortMode] = useState<SortMode>('newest')
@@ -23,7 +24,11 @@ function IndexPage(): JSX.Element {
     const loadData = async (): Promise<void> => {
       try {
         const allEntries = await getEntriesWithBacklinksAsync()
-        if (!cancelled) setEntries(allEntries)
+        if (cancelled) return
+        setEntries(allEntries)
+
+        const validIds = new Set(allEntries.map((e) => e.id))
+        pruneNoteIds((id) => id.startsWith('source:') || validIds.has(id))
       } catch (err) {
         console.error('[IndexPage] Error loading knowledge entries:', err)
       }
@@ -46,7 +51,7 @@ function IndexPage(): JSX.Element {
       if (unsubDb) unsubDb()
       window.removeEventListener('focus', handleFocus)
     }
-  }, [])
+  }, [pruneNoteIds])
 
   // Ordering is derived, so refreshes triggered by a database write or by the
   // window regaining focus no longer knock the list back to newest-first.

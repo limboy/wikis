@@ -1,4 +1,4 @@
-import { app, Menu, type MenuItemConstructorOptions } from 'electron'
+import { app, BrowserWindow, Menu, type MenuItemConstructorOptions } from 'electron'
 
 interface MenuCallbacks {
   onOpenSettings: () => void
@@ -96,4 +96,21 @@ export function buildApplicationMenu(callbacks: MenuCallbacks): Menu {
   ]
 
   return Menu.buildFromTemplate(template)
+}
+
+/**
+ * Right-click menu for a sidebar wiki entry. Kept to the OS-native Menu
+ * (rather than a custom HTML dropdown) so it matches every other context
+ * menu in the app and gets platform behavior — positioning, dismissal,
+ * keyboard nav — for free.
+ */
+export function showWikiItemContextMenu(window: BrowserWindow, onDelete: () => void): void {
+  const template: MenuItemConstructorOptions[] = [
+    {
+      label: '删除',
+      click: onDelete
+    }
+  ]
+
+  Menu.buildFromTemplate(template).popup({ window })
 }

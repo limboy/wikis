@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, ipcMain, Menu, nativeTheme } from 'electron'
+import { app, shell, BrowserWindow, dialog, ipcMain, Menu, nativeTheme } from 'electron'
 import { join } from 'path'
 import { homedir } from 'os'
 import { pathToFileURL } from 'url'
@@ -17,7 +17,7 @@ import {
 import { validateEntry, validateId } from './validation'
 import { isRendererUrl, isSafeExternalUrl } from './navigation'
 import { initialKnowledgeEntries } from './initial-data'
-import { buildApplicationMenu } from './menu'
+import { buildApplicationMenu, showWikiItemContextMenu } from './menu'
 import {
   getAppSettings,
   applyAppearance,
@@ -104,6 +104,32 @@ function setupIpcHandlers(): void {
     const res = deleteEntry(validateId(id))
     notifyDbUpdated()
     return res
+  })
+
+  // Fire-and-forget: the popup and its eventual confirmation dialog are both
+  // async, and the renderer doesn't need a reply — a successful delete shows
+  // up as the usual 'db:updated' broadcast.
+  ipcMain.on('menu:showWikiItemContextMenu', (event, id: unknown) => {
+    const entryId = validateId(id)
+    const window = BrowserWindow.fromWebContents(event.sender)
+    if (!window) return
+
+    showWikiItemContextMenu(window, () => {
+      void dialog
+        .showMessageBox(window, {
+          type: 'warning',
+          buttons: ['取消', '删除'],
+          defaultId: 0,
+          cancelId: 0,
+          message: '确定要删除这个知识点吗？',
+          detail: '此操作无法撤销。'
+        })
+        .then(({ response }) => {
+          if (response !== 1) return
+          deleteEntry(entryId)
+          notifyDbUpdated()
+        })
+    })
   })
 }
 

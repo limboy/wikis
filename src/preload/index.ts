@@ -1,7 +1,7 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 import type { AppearanceMode, AppSettings, KnowledgeEntry } from '../shared/types'
-import type { DbAPI, SettingsAPI } from './index.d'
+import type { DbAPI, MenuAPI, SettingsAPI } from './index.d'
 
 // Applied synchronously, before the page's own scripts run, so the window
 // never paints the light theme first and then flips to dark. main.tsx's
@@ -21,7 +21,7 @@ try {
 }
 
 // Custom DB and settings APIs for renderer
-const api: { db: DbAPI; settings: SettingsAPI } = {
+const api: { db: DbAPI; settings: SettingsAPI; menu: MenuAPI } = {
   db: {
     getAllEntries: () => ipcRenderer.invoke('db:getAllEntries'),
     getEntryById: (id: string) => ipcRenderer.invoke('db:getEntryById', id),
@@ -50,6 +50,9 @@ const api: { db: DbAPI; settings: SettingsAPI } = {
         ipcRenderer.removeListener('appearance:updated', listener)
       }
     }
+  },
+  menu: {
+    showWikiItemContextMenu: (id: string) => ipcRenderer.send('menu:showWikiItemContextMenu', id)
   }
 }
 

@@ -5,6 +5,7 @@ export interface UseStackedNotes {
   openNote: (noteId: string, fromIndex: number) => void
   selectNote: (noteId: string) => void
   closeNote: (index: number) => void
+  pruneNoteIds: (isValid: (noteId: string) => boolean) => void
   containerRef: RefObject<HTMLDivElement | null>
 }
 
@@ -64,11 +65,19 @@ export function useStackedNotes(initialNoteId?: string): UseStackedNotes {
     setStackedNoteIds((prev) => prev.slice(0, index))
   }, [])
 
+  // Drops panes a fresh entry list no longer backs (e.g. the entry was
+  // deleted from the sidebar's context menu) instead of leaving a blank
+  // gap behind — StackedNotesContainer renders nothing for an unknown id.
+  const pruneNoteIds = useCallback((isValid: (noteId: string) => boolean) => {
+    setStackedNoteIds((prev) => prev.filter(isValid))
+  }, [])
+
   return {
     stackedNoteIds,
     openNote,
     selectNote,
     closeNote,
+    pruneNoteIds,
     containerRef
   }
 }
