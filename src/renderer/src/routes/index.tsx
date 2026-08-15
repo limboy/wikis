@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useState, useCallback, useEffect, useMemo, type JSX } from 'react'
 import { KnowledgeSidebar, type SortMode } from '@/components/sidebar/knowledge-sidebar'
 import { StackedNotesContainer } from '@/components/notes/stacked-notes-container'
+import { SearchOverlay } from '@/components/search/search-overlay'
 import { useStackedNotes } from '@/hooks/use-stacked-notes'
 import { getEntriesWithBacklinksAsync, sortByDate, shuffleEntries } from '@/data/utils'
 import { KnowledgeEntryWithBacklinks } from '@/data/types'
@@ -17,6 +18,7 @@ function IndexPage(): JSX.Element {
   const [entries, setEntries] = useState<KnowledgeEntryWithBacklinks[]>([])
   const [sortMode, setSortMode] = useState<SortMode>('newest')
   const [shuffleSeed, setShuffleSeed] = useState(() => Date.now())
+  const [searchOpen, setSearchOpen] = useState(false)
 
   useEffect(() => {
     let cancelled = false
@@ -72,6 +74,19 @@ function IndexPage(): JSX.Element {
     [selectNote]
   )
 
+  // ⌘K / Ctrl+K opens the search overlay from anywhere in the window.
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent): void => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault()
+        setSearchOpen(true)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
+
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-background">
       <KnowledgeSidebar
@@ -80,6 +95,7 @@ function IndexPage(): JSX.Element {
         onSelectEntry={handleSelectEntry}
         sortMode={sortMode}
         onSortModeChange={handleSortModeChange}
+        onSearchClick={() => setSearchOpen(true)}
       />
       <div className="relative flex flex-1 min-w-0">
         {/* Keeps the area the panes don't cover draggable. The separator line is
@@ -96,6 +112,12 @@ function IndexPage(): JSX.Element {
           containerRef={containerRef}
         />
       </div>
+      <SearchOverlay
+        open={searchOpen}
+        onOpenChange={setSearchOpen}
+        entries={entries}
+        onSelectEntry={handleSelectEntry}
+      />
     </div>
   )
 }

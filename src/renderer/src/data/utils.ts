@@ -63,6 +63,39 @@ export function sortByDate(entries: KnowledgeEntryWithBacklinks[]): KnowledgeEnt
   )
 }
 
+// Client-side search across title, one-liner, content and tags. Ranked so
+// title matches surface above looser matches, with an empty query yielding
+// no results (the overlay treats that as "nothing typed yet" rather than
+// "show everything").
+export function searchEntries(
+  entries: KnowledgeEntryWithBacklinks[],
+  query: string
+): KnowledgeEntryWithBacklinks[] {
+  const q = query.trim().toLowerCase()
+  if (!q) return []
+
+  return entries
+    .map((entry) => {
+      const title = entry.title.toLowerCase()
+      const oneLiner = entry.oneLiner?.toLowerCase() ?? ''
+      const content = entry.content?.toLowerCase() ?? ''
+      const tags = entry.tags.map((t) => t.toLowerCase())
+
+      let score = -1
+      if (title === q) score = 100
+      else if (title.startsWith(q)) score = 80
+      else if (title.includes(q)) score = 60
+      else if (tags.some((t) => t.includes(q))) score = 40
+      else if (oneLiner.includes(q)) score = 30
+      else if (content.includes(q)) score = 10
+
+      return { entry, score }
+    })
+    .filter((r) => r.score >= 0)
+    .sort((a, b) => b.score - a.score)
+    .map((r) => r.entry)
+}
+
 // Deterministic PRNG (mulberry32) so a given seed always yields the same order
 function createRandom(seed: number): () => number {
   let state = seed >>> 0

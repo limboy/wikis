@@ -1,8 +1,9 @@
 import { useState, type JSX } from 'react'
-import { Lightbulb, BookOpen, MessageSquare, CircleHelp, Shuffle } from 'lucide-react'
+import { Search, Shuffle } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { KnowledgeEntryWithBacklinks, KnowledgeType, KNOWLEDGE_TYPE_LABELS } from '@/data/types'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { getTypeIcon, typeColorClasses, formatRelativeDate } from '@/lib/knowledge-entry-ui'
 
 export type SortMode = 'newest' | 'shuffle'
 
@@ -12,44 +13,7 @@ interface KnowledgeSidebarProps {
   onSelectEntry: (id: string) => void
   sortMode: SortMode
   onSortModeChange: (mode: SortMode) => void
-}
-
-const typeColorClasses: Record<KnowledgeType, string> = {
-  concept: 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300',
-  viewpoint: 'bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300',
-  narrative: 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300',
-  question: 'bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300'
-}
-
-function getTypeIcon(type: KnowledgeType): JSX.Element {
-  switch (type) {
-    case 'concept':
-      return <Lightbulb className="size-3 shrink-0" />
-    case 'viewpoint':
-      return <MessageSquare className="size-3 shrink-0" />
-    case 'narrative':
-      return <BookOpen className="size-3 shrink-0" />
-    case 'question':
-      return <CircleHelp className="size-3 shrink-0" />
-  }
-}
-
-function formatRelativeDate(dateStr: string): string {
-  const date = new Date(dateStr)
-  const now = new Date()
-  const diffMs = now.getTime() - date.getTime()
-
-  // Handle future dates or dates created today
-  if (diffMs <= 0) return '今天'
-
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
-
-  if (diffDays <= 0) return '今天'
-  if (diffDays === 1) return '昨天'
-  if (diffDays < 7) return `${diffDays} 天前`
-  if (diffDays < 30) return `${Math.floor(diffDays / 7)} 周前`
-  if (diffDays < 365) return `${Math.floor(diffDays / 30)} 个月前`
-  return `${Math.floor(diffDays / 365)} 年前`
+  onSearchClick: () => void
 }
 
 const TYPE_FILTER_OPTIONS: Array<{ key: KnowledgeType | 'all'; label: string }> = [
@@ -65,7 +29,8 @@ export function KnowledgeSidebar({
   activeNoteIds,
   onSelectEntry,
   sortMode,
-  onSortModeChange
+  onSortModeChange,
+  onSearchClick
 }: KnowledgeSidebarProps): JSX.Element {
   const [selectedType, setSelectedType] = useState<KnowledgeType | 'all'>('all')
 
@@ -105,9 +70,19 @@ export function KnowledgeSidebar({
             </button>
           </div>
 
-          <span className="px-2 py-0.5 rounded-full bg-muted text-xs font-medium text-muted-foreground">
-            {filteredEntries.length}
-          </span>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={onSearchClick}
+              title="搜索 (⌘K)"
+              className="flex items-center justify-center size-7 rounded-md cursor-pointer text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground"
+            >
+              <Search className="size-3.5" />
+            </button>
+            <span className="px-2 py-0.5 rounded-full bg-muted text-xs font-medium text-muted-foreground">
+              {filteredEntries.length}
+            </span>
+          </div>
         </div>
       </div>
 
