@@ -33,7 +33,7 @@ export function NotePane({
 
   // The one-liner leads the body as its own section so it picks up the same
   // heading and prose styling as the rest of the note.
-  const body = [entry.oneLiner ? `## 一句话解释\n\n${entry.oneLiner}` : '', entry.content || '']
+  const body = [entry.oneLiner ? `## 一句话概述\n\n${entry.oneLiner}` : '', entry.content || '']
     .filter(Boolean)
     .join('\n\n')
 
