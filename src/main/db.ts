@@ -126,6 +126,11 @@ const MIGRATIONS: ReadonlyArray<(database: Database.Database) => void> = [
       CREATE INDEX IF NOT EXISTS idx_tags_tag ON tags(tag);
       CREATE INDEX IF NOT EXISTS idx_entries_createdAt ON entries(createdAt DESC);
     `)
+  },
+
+  // 3: rename the reflection category to question
+  (database) => {
+    database.prepare(`UPDATE entries SET type = 'question' WHERE type = 'reflection'`).run()
   }
 ]
 

@@ -4,7 +4,7 @@ A modern personal knowledge base desktop application for macOS built with Electr
 
 ## Features
 
-- **Structured Knowledge Cards**: Categorize notes into Concepts, Viewpoints, Narratives, and Reflections (概念、观点、叙事、感悟).
+- **Structured Knowledge Cards**: Categorize notes into Concepts, Viewpoints, Narratives, and Questions (概念、观点、叙事、问题).
 - **Interlinked Knowledge Network**: Define directional relationships between notes (`derived_from`, `requires`, `related_to`, `contrasts_with`, `part_of`).
 - **Stacked / Multi-Pane Interface**: Open and compare multiple notes and source references side-by-side.
 - **Source & Tag Tracking**: Attribute entries to books, articles, videos, podcasts, conversations, or personal thoughts with tag filtering.

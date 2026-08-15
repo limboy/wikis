@@ -1,6 +1,6 @@
 ---
 name: add-wiki
-description: 创建、查询、修改或删除知识点卡片，并将每次数据变更持久化到 wikis SQLite 数据库。用户要求从文本或对话提炼知识、调整已有知识点、维护标签/关联、导入条目或删除条目时使用；按概念、观点、叙事、感悟分类生成结构化字段和 Markdown 正文，并执行对应的数据库 CRUD 操作与回读验证。
+description: 创建、查询、修改或删除知识点卡片，并将每次数据变更持久化到 wikis SQLite 数据库。用户要求从文本或对话提炼知识、调整已有知识点、维护标签/关联、导入条目或删除条目时使用；按概念、观点、叙事、问题分类生成结构化字段和 Markdown 正文，并执行对应的数据库 CRUD 操作与回读验证。
 ---
 
 # Knowledge Creator
@@ -100,7 +100,7 @@ node .agents/skills/add-wiki/scripts/knowledge-db.mjs delete <id>
 - `concept`：原理、方法论、模型、定义，回答“它是什么”，强调机制和可迁移规律。
 - `viewpoint`：作者对事物的判断、主张或立场，回答“应该怎样看”，强调可讨论的核心论点。
 - `narrative`：故事、事件、经历、场景与生活片段，回答“发生了什么”，强调人物、处境和过程。
-- `reflection`：由个人体验产生的情绪、体会或人生领悟，回答“内心感受到什么”，强调主观触动。
+- `question`：尚待澄清、验证或探索的疑问，回答“想弄清什么”，强调问题边界、已知线索和探索方向。
 
 原文引用是内容形态，不是分类。用户提供的原文应忠实保留，并通过 `source` 记录出处；分类只描述这段内容主要在表达什么。一段内容同时具备多种特征时，按用户收藏它的主要原因选择唯一类型，并用标签记录次要特征。
 
@@ -110,7 +110,7 @@ node .agents/skills/add-wiki/scripts/knowledge-db.mjs delete <id>
 interface KnowledgeEntry {
   id: string
   title: string
-  type: 'concept' | 'viewpoint' | 'narrative' | 'reflection'
+  type: 'concept' | 'viewpoint' | 'narrative' | 'question'
   oneLiner: string
   content?: string
   source?: {
@@ -190,20 +190,20 @@ interface KnowledgeEntry {
 说明值得记录的细节、转折、人性观察或现实映射；写 2–3 段。
 ```
 
-### `reflection`
+### `question`
 
 ```markdown
-## 感悟片段
+## 问题是什么
 
-呈现触发感悟的文字或情境；有原文时准确引用并注明出处或语境。
+准确陈述想要弄清的疑问，限定讨论对象、范围和关键术语；写 2–3 段。
 
-## 内心触动
+## 为什么值得追问
 
-说明其中的情绪、体验和个人领悟；写 2–3 段。
+说明问题出现的语境、现实影响、已有假设和真正的未知之处；写 2–3 段。
 
-## 延伸思考
+## 探索方向
 
-联系其他经历、作品或现实生活，给出自己的理解；写 2–3 段。
+整理已知线索、待验证假设、可查证资料和后续问题；写 2–3 段。不要把猜测写成结论。
 ```
 
 不得虚构原文。若用户没有提供准确文本且无法可靠核实，先索取原文或改用其他类型。

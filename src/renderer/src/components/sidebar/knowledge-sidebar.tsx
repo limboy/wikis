@@ -1,5 +1,5 @@
 import { useState, type JSX } from 'react'
-import { Lightbulb, BookOpen, MessageSquare, Sparkles, Shuffle } from 'lucide-react'
+import { Lightbulb, BookOpen, MessageSquare, CircleHelp, Shuffle } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { KnowledgeEntryWithBacklinks, KnowledgeType, KNOWLEDGE_TYPE_LABELS } from '@/data/types'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -18,7 +18,7 @@ const typeColorClasses: Record<KnowledgeType, string> = {
   concept: 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300',
   viewpoint: 'bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300',
   narrative: 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300',
-  reflection: 'bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300'
+  question: 'bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300'
 }
 
 function getTypeIcon(type: KnowledgeType): JSX.Element {
@@ -29,8 +29,8 @@ function getTypeIcon(type: KnowledgeType): JSX.Element {
       return <MessageSquare className="size-3 shrink-0" />
     case 'narrative':
       return <BookOpen className="size-3 shrink-0" />
-    case 'reflection':
-      return <Sparkles className="size-3 shrink-0" />
+    case 'question':
+      return <CircleHelp className="size-3 shrink-0" />
   }
 }
 
@@ -57,7 +57,7 @@ const TYPE_FILTER_OPTIONS: Array<{ key: KnowledgeType | 'all'; label: string }> 
   { key: 'concept', label: '概念' },
   { key: 'viewpoint', label: '观点' },
   { key: 'narrative', label: '叙事' },
-  { key: 'reflection', label: '感悟' }
+  { key: 'question', label: '问题' }
 ]
 
 export function KnowledgeSidebar({

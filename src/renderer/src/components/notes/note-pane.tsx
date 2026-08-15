@@ -18,7 +18,7 @@ const typeColorClasses: Record<KnowledgeType, string> = {
   concept: 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300',
   viewpoint: 'bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300',
   narrative: 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300',
-  reflection: 'bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300'
+  question: 'bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300'
 }
 
 export function NotePane({
