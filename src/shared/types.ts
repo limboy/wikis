@@ -4,7 +4,7 @@
  * process let them drift apart silently.
  */
 
-export type KnowledgeType = 'concept' | 'viewpoint' | 'narrative' | 'question'
+export type KnowledgeType = 'concept' | 'viewpoint' | 'narrative' | 'entity'
 
 export type RelationType = 'derived_from' | 'requires' | 'related_to' | 'contrasts_with' | 'part_of'
 

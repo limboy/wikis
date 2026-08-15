@@ -131,6 +131,11 @@ const MIGRATIONS: ReadonlyArray<(database: Database.Database) => void> = [
   // 3: rename the reflection category to question
   (database) => {
     database.prepare(`UPDATE entries SET type = 'question' WHERE type = 'reflection'`).run()
+  },
+
+  // 4: rename the question category to entity
+  (database) => {
+    database.prepare(`UPDATE entries SET type = 'entity' WHERE type = 'question'`).run()
   }
 ]
 

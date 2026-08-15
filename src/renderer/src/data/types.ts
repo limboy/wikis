@@ -39,5 +39,5 @@ export const KNOWLEDGE_TYPE_LABELS: Record<KnowledgeType, string> = {
   concept: '概念',
   viewpoint: '观点',
   narrative: '叙事',
-  question: '问题'
+  entity: '实体'
 }

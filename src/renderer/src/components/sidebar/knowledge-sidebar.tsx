@@ -21,7 +21,7 @@ const TYPE_FILTER_OPTIONS: Array<{ key: KnowledgeType | 'all'; label: string }> 
   { key: 'concept', label: '概念' },
   { key: 'viewpoint', label: '观点' },
   { key: 'narrative', label: '叙事' },
-  { key: 'question', label: '问题' }
+  { key: 'entity', label: '实体' }
 ]
 
 export function KnowledgeSidebar({

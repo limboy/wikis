@@ -1,5 +1,5 @@
 import type { JSX } from 'react'
-import { Lightbulb, BookOpen, MessageSquare, CircleHelp } from 'lucide-react'
+import { Lightbulb, BookOpen, MessageSquare, Boxes } from 'lucide-react'
 import { KnowledgeType } from '@/data/types'
 
 // Small presentational helpers shared between the sidebar list and the
@@ -9,7 +9,7 @@ export const typeColorClasses: Record<KnowledgeType, string> = {
   concept: 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300',
   viewpoint: 'bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300',
   narrative: 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300',
-  question: 'bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300'
+  entity: 'bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300'
 }
 
 export function getTypeIcon(type: KnowledgeType): JSX.Element {
@@ -20,8 +20,8 @@ export function getTypeIcon(type: KnowledgeType): JSX.Element {
       return <MessageSquare className="size-3 shrink-0" />
     case 'narrative':
       return <BookOpen className="size-3 shrink-0" />
-    case 'question':
-      return <CircleHelp className="size-3 shrink-0" />
+    case 'entity':
+      return <Boxes className="size-3 shrink-0" />
   }
 }
 
