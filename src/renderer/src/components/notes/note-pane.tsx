@@ -1,10 +1,11 @@
-import { type JSX } from 'react'
+import { useCallback, useMemo, type JSX } from 'react'
 import { X, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { KnowledgeEntryWithBacklinks, KnowledgeType, KNOWLEDGE_TYPE_LABELS } from '@/data/types'
 import { getEntryById } from '@/data/utils'
 import { Button } from '@/components/ui/button'
 import { MarkdownRenderer } from '@/components/ui/markdown-renderer'
+import type { ResolveWikiLink } from '@/lib/remark-wiki-link'
 
 interface NotePaneProps {
   entry: KnowledgeEntryWithBacklinks
@@ -37,6 +38,24 @@ export function NotePane({
     .filter(Boolean)
     .join('\n\n')
 
+  // Resolves a `[[Target]]` wiki-link written in note content against the
+  // loaded entries — by id first, then by title (case-insensitive, since
+  // that's how notes naturally reference each other in prose).
+  const resolveWikiLink = useMemo<ResolveWikiLink>(() => {
+    const byTitle = new Map(allEntries.map((e) => [e.title.trim().toLowerCase(), e.id]))
+    return (target) => {
+      const byId = getEntryById(target, allEntries)
+      if (byId) return { id: byId.id, exists: true }
+      const id = byTitle.get(target.trim().toLowerCase())
+      return id ? { id, exists: true } : { id: target, exists: false }
+    }
+  }, [allEntries])
+
+  const handleWikiLinkClick = useCallback(
+    (id: string) => onOpenNote(id, paneIndex),
+    [onOpenNote, paneIndex]
+  )
+
   const hasSource = Boolean(entry.source)
   const hasRelated = relatedIds.length > 0
   const hasBacklinks = backlinkIds.length > 0
@@ -68,7 +87,11 @@ export function NotePane({
           {/* Main Content */}
           {body && (
             <div className="text-base leading-relaxed">
-              <MarkdownRenderer content={body} />
+              <MarkdownRenderer
+                content={body}
+                resolveWikiLink={resolveWikiLink}
+                onWikiLinkClick={handleWikiLinkClick}
+              />
             </div>
           )}
 
