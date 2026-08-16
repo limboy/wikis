@@ -1,4 +1,4 @@
-import { useState, type JSX } from 'react'
+import { useEffect, useRef, useState, type JSX } from 'react'
 import { Search, Shuffle } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { KnowledgeEntryWithBacklinks, KnowledgeType, KNOWLEDGE_TYPE_LABELS } from '@/data/types'
@@ -33,6 +33,7 @@ export function KnowledgeSidebar({
   onSearchClick
 }: KnowledgeSidebarProps): JSX.Element {
   const [selectedType, setSelectedType] = useState<KnowledgeType | 'all'>('all')
+  const itemRefs = useRef(new Map<string, HTMLButtonElement>())
 
   const handleShuffleClick = (): void => {
     onSortModeChange(sortMode === 'shuffle' ? 'newest' : 'shuffle')
@@ -40,6 +41,15 @@ export function KnowledgeSidebar({
 
   const filteredEntries =
     selectedType === 'all' ? entries : entries.filter((e) => e.type === selectedType)
+
+  // Follows whatever note just became active (e.g. picked from search or
+  // opened via a wiki link) so the sidebar scrolls it into view instead of
+  // leaving the selection off-screen.
+  const activeEntryId = activeNoteIds[activeNoteIds.length - 1]
+  useEffect(() => {
+    if (!activeEntryId) return
+    itemRefs.current.get(activeEntryId)?.scrollIntoView({ block: 'center' })
+  }, [activeEntryId])
 
   return (
     <div className="w-[280px] h-full flex flex-col border-r border-border bg-background flex-shrink-0">
@@ -118,6 +128,10 @@ export function KnowledgeSidebar({
               return (
                 <button
                   key={entry.id}
+                  ref={(el) => {
+                    if (el) itemRefs.current.set(entry.id, el)
+                    else itemRefs.current.delete(entry.id)
+                  }}
                   onClick={() => onSelectEntry(entry.id)}
                   onContextMenu={(e) => {
                     e.preventDefault()
